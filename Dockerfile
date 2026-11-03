@@ -9,7 +9,7 @@ FROM eclipse-temurin:17-jre-jammy
 ENV DEBIAN_FRONTEND=noninteractive
 # OpenCV's native Linux dependencies and model download utilities.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates curl libstdc++6 libglib2.0-0 libgl1 libsm6 libxext6 libxrender1 \
+    ca-certificates curl libstdc++6 libglib2.0-0 libgtk2.0-0 libgl1 libsm6 libxext6 libxrender1 \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 RUN mkdir -p models \

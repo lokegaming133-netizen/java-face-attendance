@@ -26,8 +26,14 @@ function json(method, body) {
     return { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) };
 }
 
+// H2 returns uppercase column names; PostgreSQL returns lowercase.
+// Normalize API rows so the same UI works with both databases.
+function normalizeColumns(row) {
+    return Object.fromEntries(Object.entries(row).map(([key, value]) => [key.toUpperCase(), value]));
+}
+
 async function refresh() {
-    students = await api('/students');
+    students = (await api('/students')).map(normalizeColumns);
     const selected = $('student').value;
     $('student').replaceChildren();
     for (const student of students) {
@@ -39,7 +45,7 @@ async function refresh() {
     if (students.some(s => String(s.ID) === selected)) $('student').value = selected;
     syncGenderSelection();
 
-    const records = await api('/attendance');
+    const records = (await api('/attendance')).map(normalizeColumns);
     $('records').replaceChildren();
     for (const record of records) {
         const tr = document.createElement('tr');
@@ -163,7 +169,9 @@ function updateBoxes(result, angle = 0) {
     scanMisses = 0;
     $('live-status').textContent = faces.length > 1
         ? 'More than one face: show one face to recognize'
-        : 'Face detected · Match is a candidate, not attendance';
+        : faces[0].student
+            ? 'Face detected · Possible match: teacher must verify'
+            : 'Face detected · Unknown student: capture 5–10 face samples';
 
     // Reuse nodes for smooth box motion without visual flicker.
     if (overlay.children.length !== faces.length) {

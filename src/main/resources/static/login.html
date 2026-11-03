@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#121727">
+  <title>Teacher Sign In | Sunshine Scrapbook</title>
+  <style>
+    :root {
+      --night: #101523;
+      --night-soft: #1b2134;
+      --blue: #dff6ff;
+      --blue-deep: #bceeff;
+      --red: #fa4b43;
+      --red-hover: #e63c34;
+      --yellow: #ffe14a;
+      --ink: #192335;
+      --muted: #65738a;
+    }
+    * { box-sizing: border-box; }
+    html { min-height: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: radial-gradient(ellipse at 48% 14%, #283a57 0%, #171e31 38%, var(--night) 78%);
+      color: var(--ink);
+      font: 16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      overflow-x: hidden;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .background { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+    .background::before {
+      content: ""; position:absolute; inset:0;
+      background-image: radial-gradient(#eefaff 1px, transparent 1px);
+      background-size: 40px 40px; opacity: .045;
+      animation: drift-grid 20s linear infinite;
+    }
+    .orb { position: absolute; border-radius: 50%; filter: blur(3px); animation: float 8s ease-in-out infinite; }
+    .orb.a { width: 320px; height: 320px; left: -110px; top: 8%; background: radial-gradient(circle,#ff625153,transparent 67%); }
+    .orb.b { width: 380px; height: 380px; right: -130px; top: 43%; background: radial-gradient(circle,#9ee7ff38,transparent 67%); animation-delay: -3s; }
+    .orb.c { width: 300px; height: 300px; left: 37%; bottom: -170px; background: radial-gradient(circle,#ffe14a27,transparent 68%); animation-delay: -5s; }
+    .ring { position:absolute; width: 220px; height: 220px; border: 1px dashed rgba(255,225,74,.18); border-radius:50%; animation: spin 26s linear infinite; }
+    .ring::before, .ring::after { content:""; position:absolute; width:11px; height:11px; border-radius:50%; background:var(--yellow); box-shadow:0 0 18px #ffe14a77; }
+    .ring::before { left: 10%; top: 15%; } .ring::after { right: 12%; bottom: 13%; background:var(--red); }
+    .ring.a { top: 7%; right: 8%; transform: rotate(12deg); }
+    .ring.b { left: 6%; bottom: 5%; width:130px; height:130px; border-color:rgba(185,236,255,.21); animation-direction:reverse; }
+    @keyframes drift-grid { from { transform:translateY(0); } to { transform:translateY(40px); } }
+    @keyframes float { 0%,100% { transform:translate3d(0,0,0); } 50% { transform:translate3d(19px,-26px,0); } }
+    @keyframes spin { to { rotate:360deg; } }
+    @keyframes enter { from { opacity:0; transform:translateY(25px) scale(.975); } to { opacity:1; transform:translateY(0) scale(1); } }
+    @keyframes sweep { 0% { left:-75%; } 58%,100% { left:140%; } }
+    @keyframes scan { 0%,100% { top:18%; opacity:.2; } 50% { top:76%; opacity:1; } }
+    @keyframes pulse { 0%,100% { box-shadow:0 0 0 0 rgba(255,225,74,.35); } 60% { box-shadow:0 0 0 10px rgba(255,225,74,0); } }
+    @keyframes bar { 0%,100% { transform:scaleX(.52); opacity:.7; } 55% { transform:scaleX(1); opacity:1; } }
+    @keyframes shake { 0%,100% { transform:translateX(0); } 20%,60% { transform:translateX(-5px); } 40%,80% { transform:translateX(5px); } }
+    .shell { position:relative; z-index:1; min-height:100vh; min-height:100dvh; display:flex; align-items:center; justify-content:center; padding:52px 18px; }
+    .login-card {
+      width:min(100%, 465px);
+      position:relative;
+      overflow:hidden;
+      border-radius:28px;
+      border:2px solid var(--yellow);
+      background:linear-gradient(150deg,#edfbff 0%,#f7fcff 48%,#fffef8 100%);
+      box-shadow: 0 26px 75px rgba(1,5,18,.45), 0 0 0 9px rgba(255,225,74,.04);
+      padding:38px 37px 33px;
+      animation: enter .75s cubic-bezier(.19,1,.22,1) both;
+    }
+    .login-card::before {
+      content:""; position:absolute; left:0; top:0; width:100%; height:7px;
+      background:linear-gradient(90deg,var(--red) 0 35%,var(--yellow) 35% 67%,var(--blue-deep) 67% 100%);
+    }
+    .topline { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:25px; }
+    .tag { color:#344559; background:#d7f3ff; font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.12em; padding:8px 12px; border:1px solid #b1e3f4; border-radius:999px; }
+    .bars { display:flex; align-items:center; gap:5px; }
+    .bars i { display:block; width:8px; height:22px; border-radius:9px; background:var(--red); transform-origin:center bottom; animation:bar 1.6s ease-in-out infinite; }
+    .bars i:nth-child(2) { background:var(--yellow); height:16px; animation-delay:.25s; }
+    .bars i:nth-child(3) { background:#80cdec; height:26px; animation-delay:.5s; }
+    .avatar {
+      width:75px; height:75px; margin:0 auto 17px; border-radius:23px;
+      background:linear-gradient(150deg,var(--red),#ff8b75);
+      border:3px solid var(--yellow); position:relative; display:grid; place-items:center;
+      box-shadow: 0 12px 24px rgba(250,75,67,.25);
+      animation:pulse 3s ease-in-out infinite;
+    }
+    .avatar svg { width:42px; height:42px; color:white; }
+    .avatar::after { content:""; height:3px; width:66%; position:absolute; left:17%; top:20%; background:var(--yellow); border-radius:99px; box-shadow:0 0 12px var(--yellow); animation:scan 2.5s ease-in-out infinite; }
+    .heading { text-align:center; margin:0; font-size:clamp(28px,5vw,35px); font-weight:850; line-height:1.2; letter-spacing:-.04em; color:var(--ink); }
+    .subtitle { margin:10px auto 25px; color:var(--muted); text-align:center; max-width:325px; font-size:14px; line-height:1.55; }
+    .feedback { display:none; padding:12px 14px; border-radius:12px; margin-bottom:18px; font-size:13px; line-height:1.5; font-weight:650; }
+    .feedback.error { color:#8b2724; background:#fff0eb; border:1px solid #ffb5ae; animation:shake .4s ease both; }
+    .feedback.logout { color:#205c43; background:#e5faeb; border:1px solid #9cdeb5; }
+    form label { display:block; color:#263549; font-weight:750; margin-bottom:8px; font-size:13px; }
+    .field { margin-bottom:17px; }
+    .field-wrap { position:relative; }
+    .field-wrap input { display:block; width:100%; min-height:52px; border-radius:12px; padding:13px 15px; border:1.5px solid #c5d7e4; outline:0; background:#fff; color:#1f2b3d; transition:border-color .18s, box-shadow .18s; }
+    .field-wrap input:focus { border-color:var(--red); box-shadow:0 0 0 4px #fa4b4320; }
+    .field-wrap input::placeholder { color:#8c99a8; }
+    #password { padding-right:73px; }
+    .toggle { position:absolute; right:9px; top:50%; transform:translateY(-50%); padding:8px 9px; border:0; background:transparent; color:#37475b; font-weight:800; font-size:12px; border-radius:8px; }
+    .toggle:focus-visible { outline:2px solid var(--red); outline-offset:2px; }
+    .helper { margin:-5px 0 18px; font-size:12px; color:#65738a; }
+    .submit {
+      width:100%; min-height:54px; border:0; border-radius:14px; position:relative; overflow:hidden;
+      background:var(--red); color:white; font-size:16px; letter-spacing:.01em; font-weight:850;
+      box-shadow:0 10px 22px rgba(250,75,67,.27); transition:background .18s,transform .18s,box-shadow .18s;
+    }
+    .submit::after { content:""; position:absolute; top:-25%; left:-75%; width:55%; height:160%; transform:skewX(-25deg); background:linear-gradient(90deg,transparent,#ffffff60,transparent); animation:sweep 3.3s ease-in-out infinite; }
+    .submit:hover { background:var(--red-hover); transform:translateY(-2px); box-shadow:0 13px 26px rgba(250,75,67,.37); }
+    .submit:focus-visible { outline:3px solid var(--yellow); outline-offset:3px; }
+    .submit:disabled { opacity:.7; cursor:wait; }
+    .submit:disabled::after { animation:none; }
+    .submit span { position:relative; z-index:1; }
+    .bottom { display:flex; justify-content:center; align-items:center; gap:9px; margin-top:21px; color:#56677c; font-size:12px; text-align:center; }
+    .indicator { width:8px; height:8px; flex:none; background:#33b97e; border-radius:50%; box-shadow:0 0 0 4px #33b97e26; }
+    .footer { position:absolute; bottom:16px; left:0; right:0; z-index:1; text-align:center; font-size:11px; color:#b9c6da; padding:0 15px; letter-spacing:.03em; }
+    @media (max-width:520px) { .shell { padding:32px 14px 48px; } .login-card { border-radius:22px; padding:30px 24px 26px; } .topline { margin-bottom:19px; } .footer { bottom:9px; } .ring.a { right:-90px; } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; } }
+  </style>
+</head>
+<body>
+  <div class="background" aria-hidden="true">
+    <div class="orb a"></div><div class="orb b"></div><div class="orb c"></div>
+    <div class="ring a"></div><div class="ring b"></div>
+  </div>
+  <main class="shell">
+    <section class="login-card" aria-labelledby="login-heading">
+      <div class="topline">
+        <span class="tag">Sunshine Scrapbook</span>
+        <span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      </div>
+      <div class="avatar" aria-hidden="true">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 10h-7v7M31 10h7v7M10 31v7h7M38 31v7h-7"/>
+          <circle cx="19" cy="22" r="1.7" fill="currentColor" stroke="none"/>
+          <circle cx="29" cy="22" r="1.7" fill="currentColor" stroke="none"/>
+          <path d="M19 30c3 3 7 3 10 0"/>
+        </svg>
+      </div>
+      <h1 id="login-heading" class="heading">Teacher Sign In</h1>
+      <p class="subtitle">Welcome back! Sign in to manage your face attendance workspace.</p>
+      <div class="feedback error" id="errorBox" role="alert">Wrong username or password. Use the password set when you started the server.</div>
+      <div class="feedback logout" id="logoutBox" role="status">You have signed out successfully.</div>
+      <form method="post" action="/login" id="loginForm">
+        <!--LOGIN_CSRF_FIELD-->
+        <div class="field">
+          <label for="username">Username</label>
+          <div class="field-wrap"><input id="username" name="username" type="text" autocomplete="username" value="teacher" maxlength="100" required></div>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="field-wrap">
+            <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required>
+            <button type="button" id="togglePassword" class="toggle" aria-label="Show password" aria-pressed="false">Show</button>
+          </div>
+        </div>
+        <p class="helper">Use the password entered when running start.ps1.</p>
+        <button type="submit" class="submit"><span id="submitLabel">Sign In &rarr;</span></button>
+      </form>
+      <div class="bottom"><span class="indicator" aria-hidden="true"></span><span>Private local workspace · Teacher supervised</span></div>
+    </section>
+  </main>
+  <div class="footer">PRESENT · Java Face Attendance</div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const errorBox = document.getElementById('errorBox');
+    const logoutBox = document.getElementById('logoutBox');
+    if (params.has('error')) errorBox.style.display = 'block';
+    if (params.has('logout')) logoutBox.style.display = 'block';
+    const pass = document.getElementById('password');
+    const toggle = document.getElementById('togglePassword');
+    toggle.addEventListener('click', () => {
+      const showing = pass.type === 'password';
+      pass.type = showing ? 'text' : 'password';
+      toggle.textContent = showing ? 'Hide' : 'Show';
+      toggle.setAttribute('aria-label', showing ? 'Hide password' : 'Show password');
+      toggle.setAttribute('aria-pressed', String(showing));
+    });
+    document.getElementById('loginForm').addEventListener('submit', () => {
+      const button = document.querySelector('.submit');
+      button.disabled = true;
+      document.getElementById('submitLabel').textContent = 'Signing in...';
+    });
+  </script>
+</body>
+</html>

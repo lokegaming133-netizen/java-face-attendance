@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#182033">
+  <title>Present | Sunshine Scrapbook Attendance</title>
+  <style>
+    :root {
+      --ink: #182033;
+      --ink-soft: #465267;
+      --blue: #dff6ff;
+      --blue-deep: #b9eaff;
+      --red: #f4473d;
+      --red-deep: #d42c25;
+      --yellow: #ffe24b;
+      --yellow-soft: #fff5bc;
+      --paper: #fffefa;
+      --line: #d9e6ea;
+      --shadow: 0 12px 26px rgba(18, 37, 53, .09);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+      background:
+        radial-gradient(circle at 92% 7%, rgba(255, 226, 75, .46) 0, transparent 29%),
+        radial-gradient(circle at 5% 26%, rgba(244, 71, 61, .08) 0, transparent 29%),
+        var(--blue);
+    }
+    button, input, select, a { font: inherit; }
+    button, a.button { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; }
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 3px solid var(--red);
+      outline-offset: 3px;
+    }
+
+    .topbar {
+      background: var(--ink);
+      color: #fff;
+      border-bottom: 5px solid var(--yellow);
+    }
+    .topbar-inner {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 15px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+    }
+    .identity { display: flex; align-items: center; gap: 14px; min-width: 0; }
+    .logo {
+      display: grid;
+      place-items: center;
+      width: 50px;
+      height: 50px;
+      flex: 0 0 50px;
+      color: var(--ink);
+      background: var(--yellow);
+      border: 3px solid #fff;
+      border-radius: 14px;
+      font-size: 25px;
+      font-weight: 950;
+      transform: rotate(-7deg);
+      box-shadow: 5px 5px 0 var(--red);
+    }
+    .brand-name { margin: 0; font-size: 20px; font-weight: 850; letter-spacing: -.035em; }
+    .brand-subtitle { margin: 0; font-size: 12px; color: #e7ecf2; }
+
+    #message {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      padding: 11px max(24px, calc((100vw - 1172px) / 2));
+      background: var(--yellow-soft);
+      border-bottom: 2px solid #f0d34a;
+      color: #3a3119;
+      font-size: 14px;
+      font-weight: 750;
+      overflow-wrap: anywhere;
+    }
+    #message::before {
+      content: "●";
+      margin-right: 10px;
+      color: var(--red);
+      font-size: 18px;
+    }
+
+    main { max-width: 1220px; margin: auto; padding: 28px 24px 48px; }
+    .intro {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(230px, .7fr);
+      gap: 24px;
+      align-items: center;
+      margin: 0 0 26px;
+    }
+    .eyebrow {
+      display: inline-block;
+      padding: 5px 12px;
+      background: var(--yellow);
+      border: 2px solid var(--ink);
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+    h1 {
+      font-size: clamp(35px, 4.8vw, 58px);
+      line-height: 1.08;
+      letter-spacing: -.055em;
+      margin: 14px 0 12px;
+      max-width: 690px;
+      font-weight: 900;
+    }
+    h1 em { color: var(--red-deep); font-style: normal; }
+    .intro-text { max-width: 680px; margin: 0; color: var(--ink-soft); font-size: 15px; }
+    .intro-note {
+      background: var(--paper);
+      border: 2px solid var(--ink);
+      border-radius: 19px;
+      padding: 19px;
+      box-shadow: 7px 7px 0 var(--red);
+      transform: rotate(1.2deg);
+    }
+    .note-title { margin: 0 0 12px; font-size: 12px; font-weight: 850; letter-spacing: .09em; text-transform: uppercase; }
+    .steps-mini { display: flex; flex-wrap: wrap; gap: 7px; }
+    .steps-mini span { padding: 7px 10px; border-radius: 9px; font-size: 12px; font-weight: 800; color: var(--ink); background: var(--blue); }
+    .steps-mini span:nth-child(2) { background: var(--yellow); }
+    .steps-mini span:nth-child(3) { background: #ffc0b8; }
+
+    .grid { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr); gap: 22px; align-items: start; }
+    .grid > * { min-width: 0; }
+    .stack { min-width: 0; display: grid; gap: 22px; }
+    .card {
+      min-width: 0;
+      padding: 24px;
+      background: var(--paper);
+      border: 2px solid var(--ink);
+      border-radius: 23px;
+      box-shadow: var(--shadow);
+    }
+    .card-blue { background: #f0fbff; }
+    .card-yellow { background: #fff9dc; }
+    .card-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 18px; }
+    .card-number {
+      flex: 0 0 37px;
+      width: 37px;
+      height: 37px;
+      border: 2px solid var(--ink);
+      border-radius: 11px;
+      background: var(--yellow);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 12px;
+    }
+    .card-header .card-header-text { min-width: 0; }
+    h2 { margin: 0; font-size: clamp(20px, 2.3vw, 25px); line-height: 1.25; letter-spacing: -.025em; font-weight: 850; overflow-wrap: anywhere; }
+    .card-subtitle { color: var(--ink-soft); margin: 4px 0 0; font-size: 13px; }
+
+    .camera-frame { background: var(--ink); border-radius: 16px; padding: 8px; border: 4px solid var(--red); }
+    .camera-feed { position: relative; aspect-ratio: 4/3; overflow: hidden; border-radius: 9px; background: #0d1421; }
+    .camera-feed video { width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; }
+    .face-overlay { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+    .face-box {
+      position: absolute; border: 3px solid #ffe24b; border-radius: 13px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.65), 0 0 15px rgba(255,226,75,.7);
+      transition: left .22s linear, top .22s linear, width .22s linear, height .22s linear;
+    }
+    /* Same warm yellow border whether recognized or not: no green overlay. */
+    .face-box.known { border-color: #ffe24b; box-shadow: 0 0 13px rgba(255,226,75,.48); }
+    .face-tag:empty { display:none; }
+    .face-tag { position: absolute; top: 4px; left: 4px; max-width: calc(100% - 8px); padding: 4px 7px;
+      border-radius: 7px; background: rgba(24,32,51,.93); color:#fff;
+      font-size: clamp(10px,1vw,13px); font-weight:800; line-height:1.35;
+      overflow-wrap: anywhere; text-shadow: none; }
+    .camera-status { display: inline-flex; width:fit-content; max-width:100%; margin:10px 0 0;
+      background: #fff9dc; color: #283348; border:1px solid #eadb93;
+      font-weight:750; border-radius:9px; padding:6px 10px; font-size:12px; }
+    .camera-hint { margin:10px 0 0; color:var(--ink-soft); font-size:13px; }
+    video { display: block; width: 100%; aspect-ratio: 4/3; object-fit: cover; background: #0d1421; border-radius: 9px; }
+    .button-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 17px 0; }
+    button, .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      max-width: 100%;
+      padding: 11px 15px;
+      min-height: 44px;
+      border: 2px solid var(--ink);
+      border-radius: 12px;
+      background: var(--red);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.25;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 3px 4px 0 var(--ink);
+      white-space: normal;
+      text-align: center;
+      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+    button:hover, .button:hover { background: var(--red-deep); transform: translateY(-2px); box-shadow: 3px 6px 0 var(--ink); }
+    button.secondary { background: var(--yellow); color: var(--ink); }
+    button.secondary:hover { background: #f8cf32; }
+    button.danger-outline { background: #fff; color: #a71f1b; border-color: #b7423c; box-shadow: 3px 4px 0 #f1b4ae; }
+    button.danger-outline:hover { background: #ffebe8; }
+    button:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
+    .topbar button { background: #fff; color: var(--ink); box-shadow: 3px 4px 0 var(--red); }
+    .topbar button:hover { background: var(--yellow); box-shadow: 3px 5px 0 var(--red); }
+    label { display: block; color: var(--ink); font-weight: 750; font-size: 14px; }
+    input:not([type="checkbox"]), select {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      margin: 8px 0 17px;
+      padding: 12px 14px;
+      min-height: 46px;
+      background: #fff;
+      color: var(--ink);
+      border: 2px solid #9fb9c9;
+      border-radius: 11px;
+      outline: none;
+      font-weight: 500;
+    }
+    input:not([type="checkbox"]):focus, select:focus { border-color: var(--red); outline: 3px solid rgba(244, 71, 61, .18); outline-offset: 0; }
+    input::placeholder { color: #6e7e90; }
+    .checkbox-line { display: flex; gap: 10px; align-items: flex-start; margin: 4px 0 17px; font-size: 13px; font-weight: 650; line-height: 1.5; }
+    input[type="checkbox"] { flex: 0 0 18px; width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--red); }
+    .tip {
+      margin: 16px 0 0;
+      padding: 13px 15px;
+      background: #fff;
+      color: #344259;
+      font-size: 13px;
+      line-height: 1.6;
+      border: 1px solid #b6dce9;
+      border-left: 5px solid var(--red);
+      border-radius: 11px;
+    }
+    .tip-yellow { border-color: #ecdb8e; border-left-color: var(--red); }
+    #candidate {
+      background: #e7f9eb;
+      border: 2px solid #2e8860;
+      color: #173a2a;
+      border-radius: 12px;
+      padding: 15px;
+      margin: 14px 0;
+      overflow-wrap: anywhere;
+      font-size: 14px;
+      font-weight: 750;
+    }
+    #candidate button { margin: 10px 0 0; display: flex; }
+
+    .register-section { margin-top: 24px; }
+    .register-top { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-bottom: 20px; }
+    .register-top .card-header { margin-bottom: 0; }
+    .register-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .scroll { width: 100%; overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+    table { width: 100%; min-width: 640px; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 13px 14px; text-align: left; vertical-align: middle; overflow-wrap: anywhere; }
+    th { background: var(--blue); color: #182033; font-weight: 850; border-bottom: 2px solid var(--ink); }
+    td { background: #fff; color: #253044; border-bottom: 1px solid #e2eaf0; }
+    tr:nth-child(even) td { background: #f6fbfe; }
+    tbody tr:last-child td { border-bottom: 0; }
+    td button { padding: 7px 11px; min-height: 34px; font-size: 12px; background: #fff; color: #aa2822; border-color: #be4b45; box-shadow: none; }
+    td button:hover { background: #ffedea; box-shadow: none; }
+    .footer { padding: 22px 0 0; color: #4a5c6c; font-size: 12px; text-align: center; }
+
+    @media (max-width: 900px) {
+      .intro { grid-template-columns: 1fr; }
+      .intro-note { max-width: 440px; transform: none; }
+      .grid { grid-template-columns: 1fr; }
+      .stack { gap: 20px; }
+    }
+    @media (max-width: 560px) {
+      .topbar-inner { padding: 13px 16px; }
+      .brand-name { font-size: 17px; }
+      .logo { width: 43px; height: 43px; flex-basis: 43px; font-size: 21px; }
+      main { padding: 22px 14px 40px; }
+      .card { padding: 17px; border-radius: 18px; }
+      .card-header { gap: 9px; }
+      .card-number { width: 32px; height: 32px; flex-basis: 32px; }
+      #message { padding: 11px 15px; }
+      .button-row button, .register-actions > * { flex: 1 1 auto; }
+      h1 { font-size: 36px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="identity">
+        <div class="logo" aria-hidden="true">P</div>
+        <div>
+          <p class="brand-name">PRESENT<span style="color:var(--yellow)">.</span> Attendance</p>
+          <p class="brand-subtitle">Java Face Attendance &nbsp;•&nbsp; Local teacher workspace</p>
+        </div>
+      </div>
+      <button id="logout" type="button">Sign out</button>
+    </div>
+  </header>
+
+  <div id="message" role="status" aria-live="polite">Ready to begin.</div>
+
+  <main>
+    <section class="intro" aria-label="Dashboard introduction">
+      <div>
+        <span class="eyebrow">Sunshine Scrapbook ✦ Local Edition</span>
+        <h1>Every face. <em>Every class.</em> Every day.</h1>
+        <p class="intro-text">A bright, teacher-supervised workspace to register students, review face matches, and keep your attendance records organized.</p>
+      </div>
+      <div class="intro-note">
+        <p class="note-title">Today's workflow</p>
+        <div class="steps-mini" aria-label="Workflow steps">
+          <span>01 · Enroll</span><span>02 · Recognize</span><span>03 · Confirm</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="card card-blue" aria-labelledby="camera-title">
+        <div class="card-header">
+          <span class="card-number" aria-hidden="true">01</span>
+          <div class="card-header-text">
+            <h2 id="camera-title">Camera station</h2>
+            <p class="card-subtitle">Live webcam capture &amp; face matching</p>
+          </div>
+        </div>
+        <div class="camera-frame"><div class="camera-feed">
+          <video id="video" autoplay muted playsinline aria-label="Live webcam preview"></video>
+          <div id="face-overlay" class="face-overlay" aria-hidden="true"></div>
+        </div></div>
+        <div id="live-status" class="camera-status" role="status" aria-live="polite">Camera off</div>
+        <p class="camera-hint">The yellow boundary follows each face and includes extra margin. A match shows only the student name; a teacher must still verify identity before attendance.</p>
+        <div class="button-row">
+          <button type="button" id="start">Start camera</button>
+          <button type="button" id="stop" class="secondary">Stop camera</button>
+        </div>
+        <label for="session">Session identifier</label>
+        <input id="session" placeholder="2026-11-02-Java-AM" autocomplete="off">
+        <button type="button" id="recognize">Find student</button>
+        <div id="candidate" hidden></div>
+        <p class="tip">Teacher check required: match results are candidates only. No liveness or anti-spoofing detection is included, so please verify before confirming attendance.</p>
+      </section>
+
+      <div class="stack">
+        <section class="card" aria-labelledby="register-title">
+          <div class="card-header">
+            <span class="card-number" style="background:var(--blue-deep)" aria-hidden="true">02</span>
+            <div class="card-header-text">
+              <h2 id="register-title">Register student</h2>
+              <p class="card-subtitle">Create a student profile with consent</p>
+            </div>
+          </div>
+          <form id="registration">
+            <label for="name">Full name</label>
+            <input id="name" maxlength="100" required>
+            <label for="roll">Roll number</label>
+            <input id="roll" pattern="[A-Za-z0-9_-]{1,50}" required>
+            <label for="gender">Gender (student-provided, optional)</label>
+            <select id="gender">
+              <option value="Not specified">Not specified</option>
+              <option value="Female">Female</option>
+              <option value="Male">Male</option>
+              <option value="Non-binary">Non-binary</option>
+              <option value="Prefer not to say">Prefer not to say</option>
+            </select>
+            <label class="checkbox-line" for="consent">
+              <input type="checkbox" id="consent" required>
+              <span>Student agrees to local storage of face samples.</span>
+            </label>
+            <button type="submit">Add student</button>
+          </form>
+        </section>
+
+        <section class="card card-yellow" aria-labelledby="enrollment-title">
+          <div class="card-header">
+            <span class="card-number" style="background:var(--red);color:#fff" aria-hidden="true">03</span>
+            <div class="card-header-text">
+              <h2 id="enrollment-title">Enrollment &amp; manual attendance</h2>
+              <p class="card-subtitle">Capture samples or mark a student manually</p>
+            </div>
+          </div>
+          <label for="student">Student</label>
+          <select id="student"></select>
+          <label for="existing-gender">Student-provided gender (editable)</label>
+          <select id="existing-gender">
+            <option value="Not specified">Not specified</option>
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Non-binary">Non-binary</option>
+            <option value="Prefer not to say">Prefer not to say</option>
+          </select>
+          <div class="button-row"><button id="save-gender" type="button" class="secondary">Save gender</button></div>
+          <div class="button-row">
+            <button id="sample" type="button">Capture face sample</button>
+            <button id="manual" type="button" class="secondary">Mark manually</button>
+            <button id="delete" type="button" class="danger-outline">Delete student &amp; data</button>
+          </div>
+          <p class="tip tip-yellow">Capture 5–10 clear samples per student with small pose changes and consistent lighting.</p>
+        </section>
+      </div>
+    </div>
+
+    <section class="card register-section" aria-labelledby="attendance-title">
+      <div class="register-top">
+        <div class="card-header">
+          <span class="card-number" style="background:var(--blue-deep)" aria-hidden="true">04</span>
+          <div class="card-header-text">
+            <h2 id="attendance-title">Attendance register</h2>
+            <p class="card-subtitle">Review, correct, or export your attendance records.</p>
+          </div>
+        </div>
+        <div class="register-actions">
+          <a href="/api/export-text" class="button">Download TXT Table</a>
+          <a href="/api/export" class="button">Download CSV</a>
+          <button id="refresh" type="button" class="secondary">Refresh</button>
+        </div>
+      </div>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Student</th><th>Roll</th><th>Gender</th><th>Session</th><th>Time</th><th>Correction</th></tr></thead>
+          <tbody id="records"></tbody>
+        </table>
+      </div>
+    </section>
+    <footer class="footer">Made for local use · Attendance confirmation is always teacher supervised.</footer>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

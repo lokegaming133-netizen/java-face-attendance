@@ -1,0 +1,11 @@
+target/
+data/
+models/
+exports/
+.env
+.env.*
+.vscode/
+.idea/
+*.zip
+*.bak
+*.backup

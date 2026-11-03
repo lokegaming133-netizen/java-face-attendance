@@ -1,0 +1,46 @@
+FACE ACCURACY UPGRADE — YuNet + SFace (Java/OpenCV)
+
+Important: this ZIP is an IN-PLACE PATCH for the working Sunshine Scrapbook project.
+Do NOT replace the whole project. The zip's src/ folder merges with your existing src/.
+
+WHAT CHANGED
+- Replaced Haar+LBPH recognition with YuNet detector + SFace 128-D face embeddings
+- Blink/slight head turns better handled by landmark alignment and repeated capture
+- Keeps the existing colored moving boundary and name-only face overlay
+- Saved old LBPH sample images remain in `samples` table; new SFace embeddings are
+  stored in separate `face_embeddings` table. No automatic deletion or schema reset.
+- Existing H2 attendance data is preserved. No Python, Docker, cloud, or public hosting.
+- Teacher must still confirm attendance; no liveness / photo spoof prevention.
+
+YOU MUST RE-ENROLL EACH STUDENT with 5-10 NEW MODEL samples. Previously captured
+LBPH samples are NOT compatible with 128-D SFace embeddings and are NOT automatically
+used for recognition. Capture straight, natural blink, gentle left and right yaw angles.
+A full 90-degree side profile is NOT guaranteed to be recognized.
+
+INSTALL (only after confirming a backup of data/)
+1. Stop the old Spring Boot terminal with Ctrl+C. Confirm Java attendance server stopped.
+2. Make a separate backup of the `data` directory (contains biometrics/attendance).
+3. Extract this ZIP. Merge its `src` directory into your existing `face-attendance` folder.
+   Replace existing `src` files when asked; keep all other project files.
+4. ALSO copy `setup.ps1` from this patch over the original `setup.ps1`.
+   The updated script downloads 2 official model ONNX files and checks SHA256.
+5. Open CMD in folder containing `pom.xml` and run:
+      powershell -ExecutionPolicy Bypass -File .\setup.ps1
+   First-run download is approximately 39 MB. Requires internet.
+6. If BUILD SUCCESS, run:
+      powershell -ExecutionPolicy Bypass -File .\start.ps1
+7. Log in at http://localhost:8080, hard refresh (Ctrl+F5), select the old
+   student, capture NEW model samples until dropdown shows 5-10 smart samples.
+   Your old samples are still counted separately.
+8. Test recognition straight + small turns + blink; test against another unregistered
+   person's face. Only teacher should confirm a correct match.
+
+If setup fails downloading ONNX files, open the URL shown in error, and inspect
+network/HTTP error; don't delete data and don't claim the upgrade works until runtime.
+
+THRESHOLD: application.properties may set face.sface.cosine-threshold=0.40 (default).
+This is an uncalibrated initial value, NOT a guaranteed accuracy rate.
+Do not lower it casually; that can incorrectly identify another student.
+
+Source/model docs: https://docs.opencv.org/4.10.0/d0/dd4/tutorial_dnn_face.html
+Official models: https://huggingface.co/opencv/opencv_zoo

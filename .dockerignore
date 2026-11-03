@@ -1,0 +1,15 @@
+target
+.git
+.gitignore
+data
+models
+exports
+.env
+.env.*
+*.zip
+*.bak
+*.backup
+.vscode
+.idea
+README*
+*.md

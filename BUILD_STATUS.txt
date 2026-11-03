@@ -1,0 +1,5 @@
+Verified: JavaScript syntax (node --check); Maven XML parses.
+Attempted: Maven package on Java 17.
+Blocked: repo.maven.apache.org DNS resolution from Maven; Spring Boot parent POM could not resolve.
+Not verified: Java compilation, OpenCV native loading, browser camera, recognition accuracy, end-to-end database behavior.
+Run setup.ps1 on your laptop and complete README validation checklist.

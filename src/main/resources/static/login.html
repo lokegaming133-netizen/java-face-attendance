@@ -1,11 +1,21 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script id="faceattend-theme-preference">
+(function () {
+  var theme = 'sunshine';
+  try { if (localStorage.getItem('faceattend_theme_v1') === 'neo') theme = 'neo'; }
+  catch (ignored) { /* localStorage may be disabled */ }
+  document.documentElement.setAttribute('data-faceattend-theme', theme);
+  window.faceattendTheme = theme;
+})();
+</script>
+
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#121727">
   <title>Teacher Sign In | Sunshine Scrapbook</title>
-  <style>
+  <style id="faceattend-base-css">
     :root {
       --night: #101523;
       --night-soft: #1b2134;
@@ -118,13 +128,90 @@
     @media (max-width:520px) { .shell { padding:32px 14px 48px; } .login-card { border-radius:22px; padding:30px 24px 26px; } .topline { margin-bottom:19px; } .footer { bottom:9px; } .ring.a { right:-90px; } }
     @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; } }
   </style>
-</head>
+<style id="faceattend-neo-css">
+html[data-faceattend-theme="neo"] body {
+  background: radial-gradient(ellipse at 70% 25%,#e0e8ff 0%,#eef5ff 38%,#f9fbff 70%);
+  color:#111e3b; min-height:100vh; font-family:system-ui,'Segoe UI',Arial,sans-serif;
+}
+html[data-faceattend-theme="neo"] .background { opacity:.75; }
+html[data-faceattend-theme="neo"] .background::before{background-image:radial-gradient(#b6cbff 1px,transparent 1px);opacity:.33;}
+html[data-faceattend-theme="neo"] .ring{border-color:#7687f84a;}
+html[data-faceattend-theme="neo"] .orb.a{background:radial-gradient(circle,#73d9ff5c,transparent 68%);}
+html[data-faceattend-theme="neo"] .orb.b{background:radial-gradient(circle,#d09cff6b,transparent 68%);}
+html[data-faceattend-theme="neo"] .orb.c{background:radial-gradient(circle,#ffc4ba55,transparent 68%);}
+html[data-faceattend-theme="neo"] .shell {max-width:1510px;margin:auto;min-height:100dvh;display:flex;justify-content:space-between;align-items:center;gap:5vw;padding:100px 6vw 100px;}
+html[data-faceattend-theme="neo"] .faceattend-neo-promo {display:block;flex:1 1 620px;max-width:740px;min-width:0;position:relative;animation:fa-fade .75s ease-out both;}
+html[data-faceattend-theme="neo"] .faceattend-neo-promo .fa-pill{display:inline-flex;border:1px solid #b9cffc;background:#ecf5ff;
+ padding:12px 18px;border-radius:30px;color:#2752b5;font-weight:800;font-size:14px;box-shadow:0 8px 20px #91acf51c;}
+html[data-faceattend-theme="neo"] .faceattend-neo-promo h2{color:#081d43;font-size:clamp(43px,4.8vw,78px);line-height:1.07;letter-spacing:-.058em;margin:26px 0 22px;font-weight:900;}
+html[data-faceattend-theme="neo"] .faceattend-neo-promo h2 strong {background:linear-gradient(100deg,#0c8fff,#513eff 68%,#c85bca);color:transparent;background-clip:text;-webkit-background-clip:text;}
+html[data-faceattend-theme="neo"] .faceattend-neo-promo p {max-width:620px;color:#4d6287;font-size:clamp(16px,1.2vw,20px);line-height:1.6;}
+html[data-faceattend-theme="neo"] .fa-tech-icon{display:grid;place-items:center;width:clamp(110px,19vw,260px);height:clamp(110px,19vw,260px);
+ margin-top:26px;border-radius:45px;background:linear-gradient(145deg,#d0ebff,#8dc3ff 35%,#b2a9ff 82%);box-shadow:18px 24px 50px #2849ae44,inset 6px 8px 22px #fff;}
+html[data-faceattend-theme="neo"] .fa-tech-icon svg{width:77%;height:77%;color:#1761cd;filter:drop-shadow(0 6px 10px #3153bd50)}
+html[data-faceattend-theme="neo"] .fa-mini-features{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px;}
+html[data-faceattend-theme="neo"] .fa-mini-features span{background:#ffffffc9;border:1px solid #d9e6ff;color:#1d4488;border-radius:16px;padding:11px 13px;font-size:13px;font-weight:800;box-shadow:0 8px 19px #8caff434;}
+html[data-faceattend-theme="neo"] .login-card {flex:0 1 450px;width:min(100%,450px);border:1px solid #e1e8fa;border-radius:36px;
+ background:linear-gradient(150deg,#ffffffed,#f1f7ffeb);box-shadow:0 28px 75px #3553aa2e,inset 0 2px 2px #fff;
+ padding:44px 36px 40px;animation:fa-fade .7s ease-out both;overflow:visible;}
+html[data-faceattend-theme="neo"] .login-card::before {height:4px;background:linear-gradient(90deg,#00c9f9,#5360ff,#b255eb);border-radius:36px 36px 0 0;}
+html[data-faceattend-theme="neo"] .login-card .topline {display:none;}
+html[data-faceattend-theme="neo"] .login-card .avatar {background:linear-gradient(135deg,#2787ff,#7058fe);border:0;box-shadow:0 12px 24px #375ef744;animation:none;}
+html[data-faceattend-theme="neo"] .login-card .avatar::after{display:none;}
+html[data-faceattend-theme="neo"] .heading {color:#081c41;font-size:clamp(28px,3vw,38px);}
+html[data-faceattend-theme="neo"] .subtitle{color:#5b6d8d;}
+html[data-faceattend-theme="neo"] .field-wrap input{background:#edf4ff;border:1.5px solid #c7d9fa;border-radius:14px;box-shadow:inset 2px 2px 6px #adbfdf3b;color:#16264a;}
+html[data-faceattend-theme="neo"] .field-wrap input:focus{border-color:#6372ff;box-shadow:0 0 0 4px #8c93ff30;}
+html[data-faceattend-theme="neo"] .submit{background:linear-gradient(105deg,#00bbf4,#1a6efe,#6847ec);box-shadow:0 14px 24px #3555db4b;border-radius:14px;}
+html[data-faceattend-theme="neo"] .submit:hover{background:linear-gradient(105deg,#0099d5,#135ee5,#5035ce);}
+html[data-faceattend-theme="neo"] .submit::after{animation:none;}
+html[data-faceattend-theme="neo"] .login-card .helper{color:#697b9c;}
+@keyframes fa-fade{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:1020px){html[data-faceattend-theme="neo"] .shell{padding:62px 26px 95px;gap:24px;}
+ html[data-faceattend-theme="neo"] .faceattend-neo-promo h2{font-size:clamp(36px,4.3vw,60px)}}
+@media(max-width:760px){html[data-faceattend-theme="neo"] .shell{display:flex;flex-direction:column;align-items:stretch;gap:26px;padding:40px 15px 95px;}
+ html[data-faceattend-theme="neo"] .faceattend-neo-promo{flex:auto;max-width:700px;}
+ html[data-faceattend-theme="neo"] .faceattend-neo-promo h2{font-size:clamp(35px,8vw,55px);margin:12px 0;}
+ html[data-faceattend-theme="neo"] .fa-tech-icon{display:none;}
+ html[data-faceattend-theme="neo"] .login-card{flex:auto;margin:0 auto;}
+}
+</style>
+<style id="faceattend-theme-common-css">
+/* Stable theme control: independent from dashboard elements and browser camera. */
+.faceattend-theme-picker {
+  position:fixed !important; z-index:2147483000 !important;
+  right:clamp(12px,2vw,28px) !important; bottom:clamp(12px,2vw,25px) !important;
+  display:flex !important; align-items:center !important; gap:9px;
+  padding:9px 12px !important; border:1px solid #c4d1ee !important;
+  border-radius:18px !important; background:#f7faff !important;
+  box-shadow:0 12px 32px #10265c3d,0 1px 0 #fff inset !important;
+  color:#193357 !important; font-family:system-ui,'Segoe UI',Arial,sans-serif !important;
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  line-height:1.35 !important; opacity:1 !important; visibility:visible !important;
+  transform:none !important; pointer-events:auto !important;
+}
+.faceattend-theme-picker label {display:flex !important; align-items:center !important; gap:6px !important; font-weight:800 !important; font-size:13px !important; color:#172c50 !important; margin:0 !important; white-space:nowrap !important;}
+.faceattend-theme-picker select {width:auto !important; min-height:38px !important; padding:6px 12px !important; border:1px solid #b7ccee !important;
+  border-radius:10px !important; background:#eaf1ff !important; color:#162c54 !important; cursor:pointer !important; font-size:13px !important; font-weight:750 !important;}
+.faceattend-theme-picker select:focus-visible{outline:3px solid #3673ff !important;outline-offset:2px !important;}
+@media(max-width:500px){.faceattend-theme-picker{right:10px !important;bottom:10px !important;padding:6px 8px !important;gap:4px !important;}
+.faceattend-theme-picker label{font-size:11px !important;}.faceattend-theme-picker select{font-size:11px !important;min-height:32px !important;padding:5px !important;}}
+
+.faceattend-neo-promo{display:none;}</style></head>
 <body>
   <div class="background" aria-hidden="true">
     <div class="orb a"></div><div class="orb b"></div><div class="orb c"></div>
     <div class="ring a"></div><div class="ring b"></div>
   </div>
   <main class="shell">
+<section class="faceattend-neo-promo" aria-label="FaceAttend introduction">
+  <div class="fa-pill">Java 17 &nbsp; • &nbsp; Spring Boot &nbsp; • &nbsp; OpenCV</div>
+  <h2>Java Face<br><strong>Attendance</strong><br>System</h2>
+  <p>A modern, secure, teacher-supervised system for face recognition, student enrollment and reliable attendance records.</p>
+  <div class="fa-tech-icon" aria-hidden="true"><svg viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M52 20H20v32M148 20h32v32M20 148v32h32m128-32v32h-32"/><circle cx="100" cy="79" r="33"/><path d="M43 168c9-36 29-51 57-51s48 15 57 51"/><path d="M25 100h150" stroke="#e9ffff" stroke-width="3"/></svg></div>
+  <div class="fa-mini-features"><span>✦ Face detection</span><span>✦ Teacher confirmation</span><span>✦ Java + JDBC</span></div>
+</section>
+
     <section class="login-card" aria-labelledby="login-heading">
       <div class="topline">
         <span class="tag">Sunshine Scrapbook</span>
@@ -183,5 +270,37 @@
       document.getElementById('submitLabel').textContent = 'Signing in...';
     });
   </script>
+
+
+<aside class="faceattend-theme-picker" aria-label="Website theme selector">
+  <label for="faceattend-theme-select">🎨 Themes</label>
+  <select id="faceattend-theme-select" aria-label="Switch site theme">
+    <option value="sunshine">☀️ Sunshine</option>
+    <option value="neo">💜 FaceAttend</option>
+  </select>
+</aside>
+
+<script id="faceattend-theme-controls">
+(function () {
+  'use strict';
+  var select = document.getElementById('faceattend-theme-select');
+  if (!select) return;
+  var themeKey = 'faceattend_theme_v1';
+  var theme = document.documentElement.getAttribute('data-faceattend-theme') === 'neo' ? 'neo' : 'sunshine';
+  var sunshineStyle = document.getElementById('faceattend-sunshine-css');
+  var neoStyle = document.getElementById('faceattend-neo-css');
+  function useTheme(next) {
+    theme = next === 'neo' ? 'neo' : 'sunshine';
+    document.documentElement.setAttribute('data-faceattend-theme', theme);
+    if (sunshineStyle) sunshineStyle.media = theme === 'neo' ? 'not all' : 'all';
+    if (neoStyle) neoStyle.media = theme === 'neo' ? 'all' : 'not all';
+    select.value = theme;
+    try { localStorage.setItem(themeKey, theme); } catch (ignored) { /* session-only selection */ }
+  }
+  useTheme(theme);
+  select.addEventListener('change', function () { useTheme(select.value); });
+  /* No reload, document.write or camera track stop: preserve /app.js handlers and video stream. */
+})();
+</script>
 </body>
 </html>

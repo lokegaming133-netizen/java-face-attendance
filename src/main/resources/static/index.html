@@ -1,11 +1,21 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script id="faceattend-theme-preference">
+(function () {
+  var theme = 'sunshine';
+  try { if (localStorage.getItem('faceattend_theme_v1') === 'neo') theme = 'neo'; }
+  catch (ignored) { /* localStorage may be disabled */ }
+  document.documentElement.setAttribute('data-faceattend-theme', theme);
+  window.faceattendTheme = theme;
+})();
+</script>
+
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#182033">
   <title>Present | Sunshine Scrapbook Attendance</title>
-  <style>
+  <style id="faceattend-sunshine-css">
     :root {
       --ink: #182033;
       --ink-soft: #465267;
@@ -298,6 +308,404 @@
     }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; } }
   </style>
+
+<style id="faceattend-neo-css" media="not all">
+
+    :root {
+      --ink: #182033;
+      --ink-soft: #465267;
+      --blue: #dff6ff;
+      --blue-deep: #b9eaff;
+      --red: #f4473d;
+      --red-deep: #d42c25;
+      --yellow: #ffe24b;
+      --yellow-soft: #fff5bc;
+      --paper: #fffefa;
+      --line: #d9e6ea;
+      --shadow: 0 12px 26px rgba(18, 37, 53, .09);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+      background:
+        radial-gradient(circle at 92% 7%, rgba(255, 226, 75, .46) 0, transparent 29%),
+        radial-gradient(circle at 5% 26%, rgba(244, 71, 61, .08) 0, transparent 29%),
+        var(--blue);
+    }
+    button, input, select, a { font: inherit; }
+    button, a.button { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; }
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 3px solid var(--red);
+      outline-offset: 3px;
+    }
+
+    .topbar {
+      background: var(--ink);
+      color: #fff;
+      border-bottom: 5px solid var(--yellow);
+    }
+    .topbar-inner {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 15px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+    }
+    .identity { display: flex; align-items: center; gap: 14px; min-width: 0; }
+    .logo {
+      display: grid;
+      place-items: center;
+      width: 50px;
+      height: 50px;
+      flex: 0 0 50px;
+      color: var(--ink);
+      background: var(--yellow);
+      border: 3px solid #fff;
+      border-radius: 14px;
+      font-size: 25px;
+      font-weight: 950;
+      transform: rotate(-7deg);
+      box-shadow: 5px 5px 0 var(--red);
+    }
+    .brand-name { margin: 0; font-size: 20px; font-weight: 850; letter-spacing: -.035em; }
+    .brand-subtitle { margin: 0; font-size: 12px; color: #e7ecf2; }
+
+    #message {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      padding: 11px max(24px, calc((100vw - 1172px) / 2));
+      background: var(--yellow-soft);
+      border-bottom: 2px solid #f0d34a;
+      color: #3a3119;
+      font-size: 14px;
+      font-weight: 750;
+      overflow-wrap: anywhere;
+    }
+    #message::before {
+      content: "●";
+      margin-right: 10px;
+      color: var(--red);
+      font-size: 18px;
+    }
+
+    main { max-width: 1220px; margin: auto; padding: 28px 24px 48px; }
+    .intro {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(230px, .7fr);
+      gap: 24px;
+      align-items: center;
+      margin: 0 0 26px;
+    }
+    .eyebrow {
+      display: inline-block;
+      padding: 5px 12px;
+      background: var(--yellow);
+      border: 2px solid var(--ink);
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+    h1 {
+      font-size: clamp(35px, 4.8vw, 58px);
+      line-height: 1.08;
+      letter-spacing: -.055em;
+      margin: 14px 0 12px;
+      max-width: 690px;
+      font-weight: 900;
+    }
+    h1 em { color: var(--red-deep); font-style: normal; }
+    .intro-text { max-width: 680px; margin: 0; color: var(--ink-soft); font-size: 15px; }
+    .intro-note {
+      background: var(--paper);
+      border: 2px solid var(--ink);
+      border-radius: 19px;
+      padding: 19px;
+      box-shadow: 7px 7px 0 var(--red);
+      transform: rotate(1.2deg);
+    }
+    .note-title { margin: 0 0 12px; font-size: 12px; font-weight: 850; letter-spacing: .09em; text-transform: uppercase; }
+    .steps-mini { display: flex; flex-wrap: wrap; gap: 7px; }
+    .steps-mini span { padding: 7px 10px; border-radius: 9px; font-size: 12px; font-weight: 800; color: var(--ink); background: var(--blue); }
+    .steps-mini span:nth-child(2) { background: var(--yellow); }
+    .steps-mini span:nth-child(3) { background: #ffc0b8; }
+
+    .grid { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr); gap: 22px; align-items: start; }
+    .grid > * { min-width: 0; }
+    .stack { min-width: 0; display: grid; gap: 22px; }
+    .card {
+      min-width: 0;
+      padding: 24px;
+      background: var(--paper);
+      border: 2px solid var(--ink);
+      border-radius: 23px;
+      box-shadow: var(--shadow);
+    }
+    .card-blue { background: #f0fbff; }
+    .card-yellow { background: #fff9dc; }
+    .card-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 18px; }
+    .card-number {
+      flex: 0 0 37px;
+      width: 37px;
+      height: 37px;
+      border: 2px solid var(--ink);
+      border-radius: 11px;
+      background: var(--yellow);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 12px;
+    }
+    .card-header .card-header-text { min-width: 0; }
+    h2 { margin: 0; font-size: clamp(20px, 2.3vw, 25px); line-height: 1.25; letter-spacing: -.025em; font-weight: 850; overflow-wrap: anywhere; }
+    .card-subtitle { color: var(--ink-soft); margin: 4px 0 0; font-size: 13px; }
+
+    .camera-frame { background: var(--ink); border-radius: 16px; padding: 8px; border: 4px solid var(--red); }
+    .camera-feed { position: relative; aspect-ratio: 4/3; overflow: hidden; border-radius: 9px; background: #0d1421; }
+    .camera-feed video { width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; }
+    .face-overlay { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+    .face-box {
+      position: absolute; border: 3px solid #ffe24b; border-radius: 13px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.65), 0 0 15px rgba(255,226,75,.7);
+      transition: left .22s linear, top .22s linear, width .22s linear, height .22s linear;
+    }
+    /* Same warm yellow border whether recognized or not: no green overlay. */
+    .face-box.known { border-color: #ffe24b; box-shadow: 0 0 13px rgba(255,226,75,.48); }
+    .face-tag:empty { display:none; }
+    .face-tag { position: absolute; top: 4px; left: 4px; max-width: calc(100% - 8px); padding: 4px 7px;
+      border-radius: 7px; background: rgba(24,32,51,.93); color:#fff;
+      font-size: clamp(10px,1vw,13px); font-weight:800; line-height:1.35;
+      overflow-wrap: anywhere; text-shadow: none; }
+    .camera-status { display: inline-flex; width:fit-content; max-width:100%; margin:10px 0 0;
+      background: #fff9dc; color: #283348; border:1px solid #eadb93;
+      font-weight:750; border-radius:9px; padding:6px 10px; font-size:12px; }
+    .camera-hint { margin:10px 0 0; color:var(--ink-soft); font-size:13px; }
+    video { display: block; width: 100%; aspect-ratio: 4/3; object-fit: cover; background: #0d1421; border-radius: 9px; }
+    .button-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 17px 0; }
+    button, .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      max-width: 100%;
+      padding: 11px 15px;
+      min-height: 44px;
+      border: 2px solid var(--ink);
+      border-radius: 12px;
+      background: var(--red);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.25;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 3px 4px 0 var(--ink);
+      white-space: normal;
+      text-align: center;
+      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+    button:hover, .button:hover { background: var(--red-deep); transform: translateY(-2px); box-shadow: 3px 6px 0 var(--ink); }
+    button.secondary { background: var(--yellow); color: var(--ink); }
+    button.secondary:hover { background: #f8cf32; }
+    button.danger-outline { background: #fff; color: #a71f1b; border-color: #b7423c; box-shadow: 3px 4px 0 #f1b4ae; }
+    button.danger-outline:hover { background: #ffebe8; }
+    button:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
+    .topbar button { background: #fff; color: var(--ink); box-shadow: 3px 4px 0 var(--red); }
+    .topbar button:hover { background: var(--yellow); box-shadow: 3px 5px 0 var(--red); }
+    label { display: block; color: var(--ink); font-weight: 750; font-size: 14px; }
+    input:not([type="checkbox"]), select {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      margin: 8px 0 17px;
+      padding: 12px 14px;
+      min-height: 46px;
+      background: #fff;
+      color: var(--ink);
+      border: 2px solid #9fb9c9;
+      border-radius: 11px;
+      outline: none;
+      font-weight: 500;
+    }
+    input:not([type="checkbox"]):focus, select:focus { border-color: var(--red); outline: 3px solid rgba(244, 71, 61, .18); outline-offset: 0; }
+    input::placeholder { color: #6e7e90; }
+    .checkbox-line { display: flex; gap: 10px; align-items: flex-start; margin: 4px 0 17px; font-size: 13px; font-weight: 650; line-height: 1.5; }
+    input[type="checkbox"] { flex: 0 0 18px; width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--red); }
+    .tip {
+      margin: 16px 0 0;
+      padding: 13px 15px;
+      background: #fff;
+      color: #344259;
+      font-size: 13px;
+      line-height: 1.6;
+      border: 1px solid #b6dce9;
+      border-left: 5px solid var(--red);
+      border-radius: 11px;
+    }
+    .tip-yellow { border-color: #ecdb8e; border-left-color: var(--red); }
+    #candidate {
+      background: #e7f9eb;
+      border: 2px solid #2e8860;
+      color: #173a2a;
+      border-radius: 12px;
+      padding: 15px;
+      margin: 14px 0;
+      overflow-wrap: anywhere;
+      font-size: 14px;
+      font-weight: 750;
+    }
+    #candidate button { margin: 10px 0 0; display: flex; }
+
+    .register-section { margin-top: 24px; }
+    .register-top { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-bottom: 20px; }
+    .register-top .card-header { margin-bottom: 0; }
+    .register-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .scroll { width: 100%; overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+    table { width: 100%; min-width: 640px; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 13px 14px; text-align: left; vertical-align: middle; overflow-wrap: anywhere; }
+    th { background: var(--blue); color: #182033; font-weight: 850; border-bottom: 2px solid var(--ink); }
+    td { background: #fff; color: #253044; border-bottom: 1px solid #e2eaf0; }
+    tr:nth-child(even) td { background: #f6fbfe; }
+    tbody tr:last-child td { border-bottom: 0; }
+    td button { padding: 7px 11px; min-height: 34px; font-size: 12px; background: #fff; color: #aa2822; border-color: #be4b45; box-shadow: none; }
+    td button:hover { background: #ffedea; box-shadow: none; }
+    .footer { padding: 22px 0 0; color: #4a5c6c; font-size: 12px; text-align: center; }
+
+    @media (max-width: 900px) {
+      .intro { grid-template-columns: 1fr; }
+      .intro-note { max-width: 440px; transform: none; }
+      .grid { grid-template-columns: 1fr; }
+      .stack { gap: 20px; }
+    }
+    @media (max-width: 560px) {
+      .topbar-inner { padding: 13px 16px; }
+      .brand-name { font-size: 17px; }
+      .logo { width: 43px; height: 43px; flex-basis: 43px; font-size: 21px; }
+      main { padding: 22px 14px 40px; }
+      .card { padding: 17px; border-radius: 18px; }
+      .card-header { gap: 9px; }
+      .card-number { width: 32px; height: 32px; flex-basis: 32px; }
+      #message { padding: 11px 15px; }
+      .button-row button, .register-actions > * { flex: 1 1 auto; }
+      h1 { font-size: 36px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; } }
+      /* FaceAttend premium neumorphic dashboard skin. Original DOM IDs and JavaScript remain intact. */
+    :root {
+      --ink:#152751;
+      --ink-soft:#647594;
+      --blue:#e6f0ff;
+      --blue-deep:#c9e8ff;
+      --red:#2265f5;
+      --red-deep:#174ddd;
+      --yellow:#c3b8ff;
+      --yellow-soft:#f0edff;
+      --paper:#ffffffed;
+      --line:#d4e0f2;
+      --shadow:0 13px 30px rgba(47,88,176,.1), inset 2px 2px 3px rgba(255,255,255,.9);
+    }
+    body {
+      background:radial-gradient(ellipse at 89% 4%,#fad5f0 0%,transparent 28%),
+       radial-gradient(ellipse at 35% 2%,#d3ecff 0%,transparent 35%),
+       radial-gradient(ellipse at 2% 70%,#e3ddff 0%,transparent 40%),
+       linear-gradient(145deg,#f8fbff,#e8f1ff 70%,#f1edff);
+    }
+    .topbar {background:rgba(255,255,255,.84);backdrop-filter:blur(18px);color:var(--ink);border-bottom:1px solid #ffffffd5;box-shadow:0 7px 22px rgba(72,100,174,.09)}
+    .topbar-inner{max-width:1310px;padding:14px 24px}
+    .logo {background:linear-gradient(135deg,#00bafa,#1754f2 90%);border:1px solid #fff;box-shadow:0 6px 14px #2e74f544;color:white;transform:none;border-radius:16px;font-size:24px}
+    .brand-name {font-size:21px;color:#142550;letter-spacing:-.055em}
+    .brand-name span {color:#2369ee!important}
+    .brand-subtitle {color:#6a7a9c}
+    .topbar button{background:linear-gradient(125deg,#08b9ef,#295cf3 70%,#6933ec);border:1px solid white;box-shadow:0 7px 17px #3768d04b;color:white;border-radius:14px;padding:11px 18px}
+    .topbar button:hover{background:linear-gradient(125deg,#008dd8,#184bdd 70%,#5423c6);box-shadow:0 10px 19px #3768d052}
+    #message{background:#f0f6ffef;border-bottom:1px solid #cbdcf8;color:#2d467e;box-shadow:0 2px 13px rgba(89,115,185,.06)}
+    #message:before{color:#19b19b}
+    main {max-width:1310px;padding-top:42px}
+    .intro {margin-bottom:32px;grid-template-columns:minmax(0,1.3fr) minmax(280px,.65fr)}
+    .eyebrow{border:1px solid #fff;background:linear-gradient(130deg,#ebefff,#dceeff);color:#3158ab;box-shadow:inset 2px 2px 3px white,4px 7px 12px #6284d51a}
+    h1 {font-size:clamp(34px,4.5vw,60px);letter-spacing:-.065em;line-height:1.07}
+    h1 em{background:linear-gradient(100deg,#1479f2,#6938ed);background-clip:text;-webkit-text-fill-color:transparent}
+    .intro-text {font-size:15px;line-height:1.65;max-width:680px}
+    .intro-note{background:linear-gradient(135deg,#fffefee0,#edf3ffe8);border:1.5px solid #fff;box-shadow:var(--shadow);transform:none;border-radius:25px}
+    .note-title{color:#264581}
+    .steps-mini span {background:#e2eeff!important;border:1px solid white;color:#2c55a3}
+    .steps-mini span:nth-child(2){background:#ede6ff!important;color:#6b3dc0}
+    .steps-mini span:nth-child(3){background:#dbfbf5!important;color:#167a6a}
+    .grid,.stack{gap:24px}
+    .card{background:linear-gradient(155deg,#ffffffef,#f9fbffde);border:1.5px solid rgba(255,255,255,.95);border-radius:28px;box-shadow:var(--shadow),0 0 0 1px #d6e0f042;padding:27px}
+    .card-blue{background:linear-gradient(145deg,#fbfdff,#eef6ff)}
+    .card-yellow{background:linear-gradient(145deg,#fffefe,#f2f0ff)}
+    .card-number{background:linear-gradient(135deg,#d7f2ff,#c5d2ff);border:1px solid white;color:#2556b0;box-shadow:3px 4px 9px #597fc02b;border-radius:12px}
+    .card-header .card-header-text h2{color:#192952}
+    .card-subtitle{color:#627494}
+    .camera-frame {padding:6px;border:2px solid #4c85fa;background:#13224b;border-radius:18px;box-shadow:0 13px 23px #2854b53b}
+    .camera-feed{border-radius:12px}
+    .camera-status{background:#ecf4ff;border:1px solid #cbdffc;color:#2d4c87;border-radius:11px}
+    .face-box {border-color:#ffe24b}
+    button,.button{background:linear-gradient(125deg,#08b9ef,#295cf3 70%,#6933ec);border:1px solid rgba(255,255,255,.9);border-radius:13px;box-shadow:0 8px 15px rgba(42,95,207,.20);color:#fff;transition:transform .18s,box-shadow .18s,background .18s}
+    button:hover,.button:hover{background:linear-gradient(125deg,#059cdd,#1c4ddd 70%,#5629cc);box-shadow:0 11px 21px rgba(42,95,207,.3);transform:translateY(-2px)}
+    button.secondary{color:#23477f;background:linear-gradient(135deg,#fff,#dceafd);box-shadow:inset 2px 2px 3px white,5px 6px 12px #4a82c72a}
+    button.secondary:hover{background:#dbe8ff}
+    button.danger-outline{border:1px solid #edafbe;color:#b5284b;background:#fff4f6;box-shadow:4px 5px 12px #edacba30}
+    button.danger-outline:hover{background:#ffe5ed;box-shadow:4px 7px 14px #edacba30}
+    input:not([type="checkbox"]),select{border:1.5px solid #cbdaef;background:linear-gradient(150deg,#fff,#f6f9ff);border-radius:13px;box-shadow:inset 2px 3px 6px rgba(72,101,156,.055);color:#273e76}
+    input:not([type="checkbox"]):focus,select:focus{border-color:#2b6af0;outline:3px solid #366eff24}
+    input[type="checkbox"]{accent-color:#2768f4}
+    .tip{background:#f2f7ff;border:1px solid #d1e1fb;border-left:4px solid #4481fc;color:#51658c}
+    .tip-yellow{background:#f6f4ff;border-color:#e6defd;border-left-color:#7754ed}
+    #candidate{background:#e8fff7;border:1px solid #91dec6;color:#1e674f}
+    .register-section{margin-top:28px}
+    .scroll{border-color:#d4e2f4;border-radius:17px}
+    th{background:#e5efff;color:#263f7b;border-bottom:1px solid #cddcf3}
+    td{border-bottom-color:#e5edfb;color:#2a3e67}
+    tr:nth-child(even) td{background:#f6f9ff}
+    td button{background:#fff1f3;color:#b92d4c;border:1px solid #f1bcc9;box-shadow:none}
+    td button:hover{background:#ffe3eb;box-shadow:none}
+    .footer{color:#657796}
+    @media(max-width:900px){.intro{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
+    @media(max-width:560px){main{padding:25px 13px 35px}.card{padding:18px;border-radius:21px}.topbar-inner{padding:12px 14px}.brand-name{font-size:18px}.logo{width:44px;height:44px;flex-basis:44px}.intro{margin-bottom:25px}}
+
+  
+</style>
+<script id="faceattend-theme-style-boot">
+(function(){var isNeo=document.documentElement.getAttribute('data-faceattend-theme')==='neo';
+ document.getElementById('faceattend-sunshine-css').media=isNeo?'not all':'all';
+ document.getElementById('faceattend-neo-css').media=isNeo?'all':'not all';
+})();
+</script>
+<style id="faceattend-theme-common-css">
+/* Stable theme control: independent from dashboard elements and browser camera. */
+.faceattend-theme-picker {
+  position:fixed !important; z-index:2147483000 !important;
+  right:clamp(12px,2vw,28px) !important; bottom:clamp(12px,2vw,25px) !important;
+  display:flex !important; align-items:center !important; gap:9px;
+  padding:9px 12px !important; border:1px solid #c4d1ee !important;
+  border-radius:18px !important; background:#f7faff !important;
+  box-shadow:0 12px 32px #10265c3d,0 1px 0 #fff inset !important;
+  color:#193357 !important; font-family:system-ui,'Segoe UI',Arial,sans-serif !important;
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  line-height:1.35 !important; opacity:1 !important; visibility:visible !important;
+  transform:none !important; pointer-events:auto !important;
+}
+.faceattend-theme-picker label {display:flex !important; align-items:center !important; gap:6px !important; font-weight:800 !important; font-size:13px !important; color:#172c50 !important; margin:0 !important; white-space:nowrap !important;}
+.faceattend-theme-picker select {width:auto !important; min-height:38px !important; padding:6px 12px !important; border:1px solid #b7ccee !important;
+  border-radius:10px !important; background:#eaf1ff !important; color:#162c54 !important; cursor:pointer !important; font-size:13px !important; font-weight:750 !important;}
+.faceattend-theme-picker select:focus-visible{outline:3px solid #3673ff !important;outline-offset:2px !important;}
+@media(max-width:500px){.faceattend-theme-picker{right:10px !important;bottom:10px !important;padding:6px 8px !important;gap:4px !important;}
+.faceattend-theme-picker label{font-size:11px !important;}.faceattend-theme-picker select{font-size:11px !important;min-height:32px !important;padding:5px !important;}}
+</style>
 </head>
 <body>
   <header class="topbar">
@@ -441,5 +849,37 @@
   </main>
 
   <script src="/app.js"></script>
+
+
+<aside class="faceattend-theme-picker" aria-label="Website theme selector">
+  <label for="faceattend-theme-select">🎨 Themes</label>
+  <select id="faceattend-theme-select" aria-label="Switch site theme">
+    <option value="sunshine">☀️ Sunshine</option>
+    <option value="neo">💜 FaceAttend</option>
+  </select>
+</aside>
+
+<script id="faceattend-theme-controls">
+(function () {
+  'use strict';
+  var select = document.getElementById('faceattend-theme-select');
+  if (!select) return;
+  var themeKey = 'faceattend_theme_v1';
+  var theme = document.documentElement.getAttribute('data-faceattend-theme') === 'neo' ? 'neo' : 'sunshine';
+  var sunshineStyle = document.getElementById('faceattend-sunshine-css');
+  var neoStyle = document.getElementById('faceattend-neo-css');
+  function useTheme(next) {
+    theme = next === 'neo' ? 'neo' : 'sunshine';
+    document.documentElement.setAttribute('data-faceattend-theme', theme);
+    if (sunshineStyle) sunshineStyle.media = theme === 'neo' ? 'not all' : 'all';
+    if (neoStyle) neoStyle.media = theme === 'neo' ? 'all' : 'not all';
+    select.value = theme;
+    try { localStorage.setItem(themeKey, theme); } catch (ignored) { /* session-only selection */ }
+  }
+  useTheme(theme);
+  select.addEventListener('change', function () { useTheme(select.value); });
+  /* No reload, document.write or camera track stop: preserve /app.js handlers and video stream. */
+})();
+</script>
 </body>
 </html>

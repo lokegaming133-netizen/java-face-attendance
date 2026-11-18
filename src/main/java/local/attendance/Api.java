@@ -36,7 +36,7 @@ public class Api {
     public Object students() {
         String base = "SELECT s.*, (SELECT COUNT(*) FROM face_embeddings f WHERE f.student=s.id) AS samples, " +
             "(SELECT COUNT(*) FROM samples old WHERE old.student=s.id) AS legacy_samples FROM students s ";
-        if (access.isLegacyTeacherOrAdmin()) return db.queryForList(base + "ORDER BY id");
+        if (access.canManageStudents()) return db.queryForList(base + "ORDER BY id");
         return db.queryForList(base + "WHERE EXISTS (SELECT 1 FROM classroom_students cs " +
             "JOIN faculty_access fa ON fa.classroom_id=cs.classroom_id " +
             "WHERE cs.student_id=s.id AND fa.username=?) ORDER BY s.id", access.username());
@@ -52,7 +52,7 @@ public class Api {
 
     @PostMapping("/students")
     public Object student(@RequestBody Map<String, String> body) {
-    if (!access.isLegacyTeacherOrAdmin()) access.admin();
+    access.studentManager();
         String roll = body.getOrDefault("roll", "").trim();
         String name = body.getOrDefault("name", "").trim();
         if (!roll.matches("[A-Za-z0-9_-]{1,50}") || name.isBlank() || name.length() > 100
@@ -66,7 +66,7 @@ public class Api {
     /* Update an existing student's self-reported gender without deleting their samples. */
     @PutMapping("/students/{id}/gender")
     public Object updateGender(@PathVariable int id, @RequestBody Map<String, String> body) {
-        access.admin();
+        access.studentManager();
         int changed = db.update("UPDATE students SET gender=? WHERE id=?", gender(body.get("gender")), id);
         if (changed == 0) throw new IllegalArgumentException("Student not found");
         return Map.of("message", "Student gender updated");
@@ -75,7 +75,7 @@ public class Api {
     @PostMapping("/students/{id}/samples")
     @Transactional
     public Object sample(@PathVariable int id, @RequestParam MultipartFile image) throws Exception {
-        if (!access.isLegacyTeacherOrAdmin()) access.admin();
+        access.studentManager();
         Integer count = db.queryForObject("SELECT COUNT(*) FROM face_embeddings WHERE student=?", Integer.class, id);
         if (count != null && count >= 20) {
             throw new IllegalArgumentException("Maximum 20 new-model samples per student");
@@ -89,7 +89,8 @@ public class Api {
     @DeleteMapping("/students/{id}")
     @Transactional
     public void delete(@PathVariable int id) {
-        access.admin();
+        access.studentManager();
+        db.update("UPDATE app_users SET active=FALSE,auth_version=auth_version+1 WHERE student_id=?", id);
         db.update("DELETE FROM attendance WHERE student=?", id);
         db.update("DELETE FROM face_embeddings WHERE student=?", id);
         db.update("DELETE FROM samples WHERE student=?", id);

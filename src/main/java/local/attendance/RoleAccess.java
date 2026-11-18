@@ -23,6 +23,17 @@ public class RoleAccess {
         Authentication a = SecurityContextHolder.getContext().getAuthentication();
         return a != null && a.getAuthorities().stream().anyMatch(g -> g.getAuthority().equals("ROLE_ADMIN"));
     }
+    /** Student profile and biometric enrollment permissions; not admin account management. */
+    public boolean isFaculty() {
+        Authentication a = SecurityContextHolder.getContext().getAuthentication();
+        return a != null && a.isAuthenticated() &&
+            a.getAuthorities().stream().anyMatch(g -> "ROLE_FACULTY".equals(g.getAuthority()));
+    }
+    public boolean canManageStudents() { return isAdmin() || isFaculty(); }
+    public void studentManager() {
+        if (!canManageStudents()) throw new AccessDeniedException("Faculty or Admin required for student management");
+    }
+
     public boolean isTeacher() {
         Authentication a = SecurityContextHolder.getContext().getAuthentication();
         return a != null && "teacher".equals(a.getName()) &&

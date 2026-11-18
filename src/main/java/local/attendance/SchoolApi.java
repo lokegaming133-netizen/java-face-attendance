@@ -156,7 +156,7 @@ public class SchoolApi {
 
     @PostMapping("/classrooms/{classroomId}/students")
     public Object addStudent(@PathVariable String classroomId, @RequestBody Map<String, String> body) {
-        access.admin();
+        access.studentManager();
         String id = uuid(classroomId);
         requireClassroom(id);
         int student = studentId(value(body, "studentId", 16));
@@ -166,8 +166,9 @@ public class SchoolApi {
 
     @DeleteMapping("/classrooms/{classroomId}/students/{studentId}")
     public Object removeStudent(@PathVariable String classroomId, @PathVariable int studentId) {
-        access.admin();
+        access.studentManager();
         String id = uuid(classroomId);
+        requireClassroom(id);
         // Preserve historic attendance, biometric templates and the global student profile.
         int removed = db.update("DELETE FROM classroom_students WHERE classroom_id=? AND student_id=?", id, studentId);
         if (removed == 0) throw new IllegalArgumentException("Student not found in classroom roster");

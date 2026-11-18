@@ -116,6 +116,9 @@ function frame(angle = 0) {
 async function imageBody(angle = 0) {
     const form = new FormData();
     form.append('image', await frame(angle), 'frame.jpg');
+    // The backend uses the active classroom session to authorize faculty identity results.
+    const activeSession = document.getElementById('session')?.value.trim();
+    if (activeSession) form.append('session', activeSession);
     return form;
 }
 

@@ -1,0 +1,93 @@
+/* FaceAttend Admin original look, recovered directly from user's reference.
+   Only linked by /admin.html. Live account functionality is kept separately. */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+/* Phase 2: isolated role administration styling; no camera or theme rules overridden. */
+#role-admin-panel {max-width:1220px;margin:28px auto;padding:0 24px 36px;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#162640;}
+#role-admin-panel * {box-sizing:border-box;}
+#role-admin-panel .role-shell {background:#f8fbff;border:1px solid #cfddf4;border-radius:25px;padding:25px;box-shadow:0 18px 50px #203d8116;}
+#role-admin-panel .role-header {display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:16px;}
+#role-admin-panel h2{margin:0;font-size:clamp(22px,3vw,31px);letter-spacing:-.04em;line-height:1.25;color:#1a2b56;}
+#role-admin-panel h3{font-size:17px;margin:0 0 12px;color:#20305a;}
+#role-admin-panel .role-kicker{color:#4468cc;text-transform:uppercase;letter-spacing:.16em;font-size:11px;font-weight:850;}
+#role-admin-panel p{margin:5px 0 0;color:#617090;font-size:13px;}
+#role-admin-panel .role-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;}
+#role-admin-panel .role-card{background:white;border:1px solid #dce6f8;border-radius:19px;padding:20px;box-shadow:0 8px 22px #2239750b;min-width:0;}
+#role-admin-panel .role-grid .role-wide{grid-column:1/-1;}
+#role-admin-panel label{display:grid;gap:5px;font-size:12px;font-weight:700;color:#3e506b;}
+#role-admin-panel input,#role-admin-panel select{min-height:42px;padding:9px 12px;font-size:14px;border:1px solid #c7d5ee;background:#faffff;border-radius:11px;color:#1f3558;width:100%;}
+#role-admin-panel form{display:grid;gap:12px;}
+#role-admin-panel .role-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+#role-admin-panel button{border:0;background:linear-gradient(110deg,#397bff,#8064f6);color:#fff;border-radius:11px;padding:11px 15px;font-weight:800;cursor:pointer;min-height:40px;}
+#role-admin-panel button.role-outline{background:#eef3fe;color:#3d5792;}
+#role-admin-panel button.role-danger{background:#fff0ef;color:#a12b28;}
+#role-admin-panel button:disabled{opacity:.5;cursor:wait;}
+#role-admin-panel .role-list{display:grid;gap:9px;max-height:400px;overflow-y:auto;}
+#role-admin-panel .role-item{border:1px solid #e1e9f7;background:#fbfdff;padding:11px 13px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+#role-admin-panel .role-item strong{font-size:13px;color:#2e456c;}
+#role-admin-panel .role-item small{display:block;color:#5c7292;font-size:11px;}
+#role-admin-panel .role-actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center;}
+#role-admin-panel .role-actions button{font-size:11px;padding:7px 10px;min-height:32px;}
+#role-admin-panel #role-feedback{min-height:40px;padding:10px 12px;background:#eaf4ff;border-radius:10px;color:#254771;margin-bottom:16px;font-size:13px;}
+#role-admin-panel #role-feedback.role-error{background:#fff2f0;color:#99231d;}
+#role-admin-link{display:none;background:#e9f1ff;color:#244eac;padding:9px 14px;border-radius:12px;font-size:13px;font-weight:800;text-decoration:none;}
+#role-admin-link.role-visible{display:inline-block;}
+body.faceattend-faculty section[aria-labelledby="register-title"],body.faceattend-faculty #sample,body.faceattend-faculty #delete,body.faceattend-faculty #save-gender,body.faceattend-faculty #existing-gender,body.faceattend-faculty label[for="existing-gender"],body.faceattend-faculty .register-actions a,body.faceattend-faculty #school-tab-classes,body.faceattend-faculty #school-pane-classes,body.faceattend-faculty #school-manual,body.faceattend-faculty #records td:last-child,body.faceattend-faculty .register-section th:last-child{display:none!important;}
+body.faceattend-faculty #school-pane-attendance{display:block;}
+body.faceattend-faculty .school-advanced{display:none!important;}
+html[data-faceattend-theme="neo"] #role-admin-panel .role-shell{background:#f4f7ff;border-color:#d6e2ff;box-shadow:0 18px 48px #4754dd20;}
+@media(max-width:850px){#role-admin-panel .role-grid{grid-template-columns:1fr;}#role-admin-panel .role-grid .role-wide{grid-column:auto;}}
+@media(max-width:480px){#role-admin-panel{padding:0 12px}#role-admin-panel .role-shell{padding:14px}#role-admin-panel .role-card{padding:14px}#role-admin-panel .role-row{grid-template-columns:1fr;}}
+#role-admin-panel[hidden],#role-admin-panel [hidden]{display:none!important;}
+
+
+
+:root{font-family:system-ui,'Segoe UI',sans-serif;color:#24335b;background:#eef5ff}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 10% 10%,#cee9ff,transparent 55%),radial-gradient(circle at 93% 3%,#e2d8ff,transparent 40%),#f5f9ff}
+.top{display:flex;gap:20px;justify-content:space-between;align-items:center;flex-wrap:wrap;padding:25px max(20px,5vw);background:#ffffffd9;border-bottom:1px solid #d6dff4}
+.top strong{font-size:22px;color:#173678}.top nav{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.top a{font-weight:750;text-decoration:none;color:#3257a9;background:#edf3ff;padding:11px 15px;border-radius:13px}
+.top button{border:0;padding:11px 18px;border-radius:13px;color:white;background:#425cce;cursor:pointer;font-weight:750}
+[data-faceattend-theme=sunshine] body{background:#fff8e6}[data-faceattend-theme=sunshine] .top{border-bottom:4px solid #f7c738}
+@media(max-width:650px){.top{padding:16px}.top strong{font-size:18px}}
+
+
+html,body{background:#090b0f!important;color:#f0ede8}#admin-gallery-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}body{background:repeating-radial-gradient(circle at 130% 140%,#07080a 0%,#383b40 7%,#101115 9%,#757980 9.3%,#08090a 10%) fixed!important}.top,.role-shell{position:relative}.top,.role-card{background:#12151aef!important;border:1px solid #42444a!important;color:#eee!important}.role-header{background:linear-gradient(90deg,#111319ed,#12131988)!important;color:white!important;padding:30px;border-radius:20px}.top strong,.role-shell h1,.role-shell h2,.role-shell h3,.role-shell label{color:#fff!important}.role-shell p,.role-shell small{color:#c6c8ce!important}.role-card input,.role-card select{background:#202329!important;color:white!important;border-color:#515258!important}.top nav{color:#ccc}.role-shell{padding-bottom:60px}.role-kicker{color:#f1ca89!important}
+
+
+:root{color-scheme:dark}
+html,body{background:#060c17!important}
+body::before{content:"";position:fixed;inset:-22%;pointer-events:none;background:repeating-radial-gradient(ellipse at 115% 130%,#050a15 0%,#122439 5%,#174d53 6%,#302454 7%,#070e1c 9%);animation:admin-drift 7s ease-in-out infinite alternate}
+@keyframes admin-drift{to{transform:translate(-7%,4%) scale(1.09)}}
+@media(prefers-reduced-motion:reduce){body::before{animation:none}}
+#admin-gallery-canvas{width:100vw;height:100vh}
+#role-admin-panel{position:relative}
+#role-admin-panel .role-shell{background:transparent!important;border:0;box-shadow:none}
+#role-admin-panel .role-header{background:linear-gradient(90deg,#091321e8,#09132126)!important;min-height:152px}
+.top,#role-admin-panel .role-card{background:#0c1828e8!important;border-color:#284052!important}
+.top strong,#role-admin-panel h2,#role-admin-panel h3{color:#81e7cc!important}
+#role-admin-panel p,#role-admin-panel small,#role-admin-panel label,.top nav,#role-admin-panel .role-list{color:#a1bccc!important}
+.top a,.top button,.top select,#role-admin-panel input,#role-admin-panel select,#role-admin-panel #role-feedback{color:#8ddccb!important;background:#101f30!important;border-color:#2b475a!important}
+#role-admin-panel button{background:#353360!important;color:#c7adfa!important}
+#role-admin-panel .role-kicker{color:#bc9af1!important}
+
+
+
+.top,.top nav,#role-admin-panel .role-header,#role-admin-panel .role-card{background:#181818!important}
+.top a,.top button,.top select,#role-admin-panel #role-feedback,#role-admin-panel input,#role-admin-panel select,#role-admin-panel button{background:#101010!important}
+body,body .top *,body #role-admin-panel#role-admin-panel *,body #role-admin-panel #role-feedback,body footer{color:#ffdf00!important}
+body #role-admin-panel input::placeholder{color:#ffdf00!important;opacity:1}
+body :is(button,input,select):disabled{opacity:1!important;-webkit-text-fill-color:#ffdf00}
+
+
+
+
+html body,html body .top *,html body #role-admin-panel#role-admin-panel *,html body #role-admin-panel #role-feedback,html body footer{color:#a1a1aa!important;font-family:'IBM Plex Sans','Segoe UI',sans-serif!important}
+html body #role-admin-panel#role-admin-panel :is(h1,h2,h3),html body .top strong{font-family:'Playfair Display',Georgia,serif!important;color:#fff!important;letter-spacing:-.025em;font-weight:600}
+html body #role-admin-panel input::placeholder{color:#a1a1aa!important}
+html body :is(button,input,select):disabled{-webkit-text-fill-color:#a1a1aa!important}
+
+/* Keep the original backdrop BEHIND functional form controls. */
+body { isolation:isolate; }
+#admin-gallery-canvas {position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+body::before {z-index:0;}
+.top, #role-admin-panel {position:relative;z-index:1;}
+#role-admin-panel .role-shell {position:relative;z-index:1;}

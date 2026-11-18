@@ -17,11 +17,15 @@ import org.springframework.web.multipart.MultipartFile;
 public class Api {
     private final JdbcTemplate db;
     private final FaceService faces;
+    private final SchoolService school;
+    private final RoleAccess access;
     private final AttendanceTextService attendanceText;
 
-    public Api(JdbcTemplate db, FaceService faces, AttendanceTextService attendanceText) {
+    public Api(JdbcTemplate db, FaceService faces, AttendanceTextService attendanceText, SchoolService school, RoleAccess access) {
         this.db = db;
         this.faces = faces;
+        this.school = school;
+        this.access = access;
         this.attendanceText = attendanceText;
     }
 
@@ -30,8 +34,12 @@ public class Api {
 
     @GetMapping("/students")
     public Object students() {
-        return db.queryForList("SELECT s.*, (SELECT COUNT(*) FROM face_embeddings f WHERE f.student=s.id) AS samples, " +
-            "(SELECT COUNT(*) FROM samples old WHERE old.student=s.id) AS legacy_samples FROM students s ORDER BY id");
+        String base = "SELECT s.*, (SELECT COUNT(*) FROM face_embeddings f WHERE f.student=s.id) AS samples, " +
+            "(SELECT COUNT(*) FROM samples old WHERE old.student=s.id) AS legacy_samples FROM students s ";
+        if (access.isLegacyTeacherOrAdmin()) return db.queryForList(base + "ORDER BY id");
+        return db.queryForList(base + "WHERE EXISTS (SELECT 1 FROM classroom_students cs " +
+            "JOIN faculty_access fa ON fa.classroom_id=cs.classroom_id " +
+            "WHERE cs.student_id=s.id AND fa.username=?) ORDER BY s.id", access.username());
     }
 
     private String gender(String supplied) {
@@ -44,6 +52,7 @@ public class Api {
 
     @PostMapping("/students")
     public Object student(@RequestBody Map<String, String> body) {
+    if (!access.isLegacyTeacherOrAdmin()) access.admin();
         String roll = body.getOrDefault("roll", "").trim();
         String name = body.getOrDefault("name", "").trim();
         if (!roll.matches("[A-Za-z0-9_-]{1,50}") || name.isBlank() || name.length() > 100
@@ -57,6 +66,7 @@ public class Api {
     /* Update an existing student's self-reported gender without deleting their samples. */
     @PutMapping("/students/{id}/gender")
     public Object updateGender(@PathVariable int id, @RequestBody Map<String, String> body) {
+        access.admin();
         int changed = db.update("UPDATE students SET gender=? WHERE id=?", gender(body.get("gender")), id);
         if (changed == 0) throw new IllegalArgumentException("Student not found");
         return Map.of("message", "Student gender updated");
@@ -65,6 +75,7 @@ public class Api {
     @PostMapping("/students/{id}/samples")
     @Transactional
     public Object sample(@PathVariable int id, @RequestParam MultipartFile image) throws Exception {
+        if (!access.isLegacyTeacherOrAdmin()) access.admin();
         Integer count = db.queryForObject("SELECT COUNT(*) FROM face_embeddings WHERE student=?", Integer.class, id);
         if (count != null && count >= 20) {
             throw new IllegalArgumentException("Maximum 20 new-model samples per student");
@@ -78,6 +89,7 @@ public class Api {
     @DeleteMapping("/students/{id}")
     @Transactional
     public void delete(@PathVariable int id) {
+        access.admin();
         db.update("DELETE FROM attendance WHERE student=?", id);
         db.update("DELETE FROM face_embeddings WHERE student=?", id);
         db.update("DELETE FROM samples WHERE student=?", id);
@@ -102,6 +114,7 @@ public class Api {
 
     private Object mark(int id, String s, String method) {
         session(s);
+        school.validateMark(id, s);
         try {
             db.update("INSERT INTO attendance(student,session_name,marked_at,method) VALUES(?,?,?,?)",
                 id, s, OffsetDateTime.now().toString(), method);
@@ -116,13 +129,15 @@ public class Api {
     public Object recognize(@RequestParam MultipartFile image, @RequestParam String session) throws Exception {
         session(session);
         int id = faces.identify(image.getBytes());
+        if (id >= 0 && !access.canIdentify(id, session)) id = -1;
         if (id < 0) return Map.of("message", "Unknown face. Try again or mark manually.");
         return Map.of("message", "Candidate found — teacher must verify before marking", "candidate", id);
     }
 
     /* Does not save frames or attendance; returns rectangles and enrolled profile data only. */
     @PostMapping("/live")
-    public Object live(@RequestParam MultipartFile image) throws Exception {
+    public Object live(@RequestParam MultipartFile image,
+                       @RequestParam(required = false) String session) throws Exception {
         FaceService.ScanResult result = faces.scan(image.getBytes());
         List<Map<String, Object>> boxes = new ArrayList<>();
         for (FaceService.FaceBox face : result.faces()) {
@@ -131,13 +146,13 @@ public class Api {
             item.put("y", face.y());
             item.put("width", face.width());
             item.put("height", face.height());
-            if (face.studentId() != null) {
+            if (face.studentId() != null && access.canIdentify(face.studentId(), session)) {
                 var profile = db.queryForList("SELECT name, roll, gender FROM students WHERE id=?", face.studentId());
                 if (!profile.isEmpty()) {
                     item.put("student", face.studentId());
-                    item.put("name", profile.get(0).get("NAME"));
-                    item.put("roll", profile.get(0).get("ROLL"));
-                    item.put("gender", profile.get(0).get("GENDER"));
+                    item.put("name", SchoolService.column(profile.get(0), "name"));
+                    item.put("roll", SchoolService.column(profile.get(0), "roll"));
+                    item.put("gender", SchoolService.column(profile.get(0), "gender"));
                 }
             }
             boxes.add(item);
@@ -152,11 +167,16 @@ public class Api {
 
     @GetMapping("/attendance")
     public Object records() {
-        return db.queryForList("SELECT a.*,s.name,s.roll,s.gender FROM attendance a JOIN students s ON s.id=a.student ORDER BY marked_at DESC");
+        String sql = "SELECT a.*,s.name,s.roll,s.gender FROM attendance a JOIN students s ON s.id=a.student ";
+        if (access.isLegacyTeacherOrAdmin()) return db.queryForList(sql + "ORDER BY a.marked_at DESC");
+        return db.queryForList(sql + "JOIN class_sessions x ON x.session_key=a.session_name " +
+            "JOIN faculty_access fa ON fa.classroom_id=x.classroom_id AND fa.subject_id=x.subject_id " +
+            "WHERE fa.username=? ORDER BY a.marked_at DESC", access.username());
     }
 
     @DeleteMapping("/attendance")
     public void remove(@RequestParam int student, @RequestParam String session) {
+        access.admin(); // Correction audit trail will be added in a later phase.
         db.update("DELETE FROM attendance WHERE student=? AND session_name=?", student, session);
         attendanceText.refreshSafely();
     }
@@ -169,12 +189,14 @@ public class Api {
 
     @GetMapping(value = "/export", produces = "text/csv")
     public ResponseEntity<String> export() {
+        access.admin(); // Faculty use their scoped classroom session CSV endpoint.
         StringBuilder b = new StringBuilder("Roll,Name,Gender,Session,Time,Method\n");
         for (var r : db.queryForList("SELECT s.roll,s.name,s.gender,a.session_name,a.marked_at,a.method "
                 + "FROM attendance a JOIN students s ON s.id=a.student ORDER BY marked_at DESC")) {
             b.append(String.join(",", List.of(
-                csv(r.get("ROLL")), csv(r.get("NAME")), csv(r.get("GENDER")),
-                csv(r.get("SESSION_NAME")), csv(r.get("MARKED_AT")), csv(r.get("METHOD"))
+                csv(SchoolService.column(r,"roll")), csv(SchoolService.column(r,"name")),
+                csv(SchoolService.column(r,"gender")), csv(SchoolService.column(r,"session_name")),
+                csv(SchoolService.column(r,"marked_at")), csv(SchoolService.column(r,"method"))
             ))).append("\n");
         }
         return ResponseEntity.ok().header("Content-Disposition", "attachment; filename=attendance.csv").body(b.toString());
@@ -183,6 +205,7 @@ public class Api {
     // Download the current human-readable table, not another new archive file.
     @GetMapping(value = "/export-text", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<byte[]> exportText() throws IOException {
+        access.admin();
         return ResponseEntity.ok()
             .contentType(MediaType.parseMediaType("text/plain;charset=UTF-8"))
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=attendance_register.txt")

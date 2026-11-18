@@ -706,8 +706,309 @@
 @media(max-width:500px){.faceattend-theme-picker{right:10px !important;bottom:10px !important;padding:6px 8px !important;gap:4px !important;}
 .faceattend-theme-picker label{font-size:11px !important;}.faceattend-theme-picker select{font-size:11px !important;min-height:32px !important;padding:5px !important;}}
 </style>
-</head>
-<body>
+<link rel="stylesheet" href="/school.css">
+<link rel="stylesheet" href="/roles.css">
+
+<style id="faceattend-teacher-dashboard-midnight-v1">
+/* FaceAttend Midnight Indigo – after-login teacher dashboard ONLY.
+   Safe overlay: no DOM changes, JavaScript changes, camera changes or login changes.
+   Activated when the dashboard's existing Sunshine theme is selected.
+*/
+html[data-faceattend-theme="sunshine"] {
+  color-scheme: dark;
+  --ink: #eff4ff;
+  --ink-soft: #a6b5d1;
+  --blue: #101d36;
+  --blue-deep: #1a3155;
+  --red: #4f46e5;
+  --red-deep: #4338ca;
+  --yellow: #10b981;
+  --yellow-soft: #143c37;
+  --paper: #15243e;
+  --line: #31415f;
+  --shadow: 0 16px 38px rgba(1,8,24,.23);
+}
+html[data-faceattend-theme="sunshine"] body {
+  color: #ebf1ff;
+  background: radial-gradient(ellipse at 84% 4%, rgba(79,70,229,.17),transparent 35%),
+              radial-gradient(ellipse at 8% 45%, rgba(16,185,129,.10),transparent 42%),
+              linear-gradient(135deg,#080f20,#0c172a 47%,#101a32 100%);
+  background-attachment: fixed;
+}
+html[data-faceattend-theme="sunshine"] .topbar {
+  color: #f7f9ff;
+  background: rgba(10,18,37,.97);
+  border-bottom: 1px solid #263756;
+  box-shadow: 0 4px 22px rgba(2,8,25,.25);
+}
+html[data-faceattend-theme="sunshine"] .topbar-inner { max-width: 1220px; }
+html[data-faceattend-theme="sunshine"] .logo {
+  color: #071a22;
+  background: linear-gradient(135deg,#8ef4d3,#10b981);
+  border: 2px solid #b0f9e0;
+  box-shadow: 0 4px 15px rgba(16,185,129,.20);
+  transform: rotate(-3deg);
+}
+html[data-faceattend-theme="sunshine"] .brand-subtitle {color:#aebbd3;}
+html[data-faceattend-theme="sunshine"] .topbar .brand-name span[style] {color:#a5b4fc !important;}
+html[data-faceattend-theme="sunshine"] .topbar button,
+html[data-faceattend-theme="sunshine"] .school-nav-link {
+  color: #e9efff;
+  border: 1px solid #52649a;
+  border-radius: 12px;
+  background: #1b2b4c;
+  box-shadow: none;
+}
+html[data-faceattend-theme="sunshine"] .topbar button:hover,
+html[data-faceattend-theme="sunshine"] .school-nav-link:hover { background:#2c3975;box-shadow:none; }
+html[data-faceattend-theme="sunshine"] #message {
+  color: #d7fcef;
+  background: #10352f;
+  border-bottom: 1px solid #23675b;
+}
+html[data-faceattend-theme="sunshine"] #message::before { color: #34d399; }
+html[data-faceattend-theme="sunshine"] .eyebrow {
+  color: #cecaff;
+  background: #24225e;
+  border:1px solid #5144b2;
+  letter-spacing:.1em;
+}
+html[data-faceattend-theme="sunshine"] h1,
+html[data-faceattend-theme="sunshine"] h2 {color:#f4f7ff;}
+html[data-faceattend-theme="sunshine"] h1 em {color:#aaa8ff;}
+html[data-faceattend-theme="sunshine"] .intro-text,
+html[data-faceattend-theme="sunshine"] .card-subtitle,
+html[data-faceattend-theme="sunshine"] .camera-hint {color:#a7b6d0;}
+html[data-faceattend-theme="sunshine"] .intro-note,
+html[data-faceattend-theme="sunshine"] .card {
+  color: #ebf1ff;
+  background: linear-gradient(155deg,#17253f 0%,#121d34 100%);
+  border: 1px solid #324362;
+  border-radius: 22px;
+  box-shadow: 0 13px 32px rgba(1,6,19,.28), inset 0 1px 0 rgba(201,218,255,.05);
+  transform:none;
+}
+html[data-faceattend-theme="sunshine"] .intro-note {padding:22px;}
+html[data-faceattend-theme="sunshine"] .note-title {color:#e6edff;}
+html[data-faceattend-theme="sunshine"] .steps-mini span {
+  color: #d7ddff;
+  background: #262550;
+  border: 1px solid #454379;
+}
+html[data-faceattend-theme="sunshine"] .steps-mini span:nth-child(2){color:#d7fff0;background:#12423c;border-color:#227969;}
+html[data-faceattend-theme="sunshine"] .steps-mini span:nth-child(3){color:#d3e4ff;background:#1b3456;border-color:#325687;}
+html[data-faceattend-theme="sunshine"] .card-number,
+html[data-faceattend-theme="sunshine"] .card-number[style] {
+  color: #e9e8ff !important;
+  background:#353078 !important;
+  border: 1px solid #6258d5;
+  box-shadow: none;
+}
+html[data-faceattend-theme="sunshine"] .camera-frame {
+  background:#071122;
+  border:2px solid #5c5fd5;
+  padding:7px;
+  box-shadow: 0 0 0 1px rgba(125,117,244,.10);
+}
+html[data-faceattend-theme="sunshine"] .camera-feed,
+html[data-faceattend-theme="sunshine"] video {background:#080e1d;}
+/* Face recognition overlays retain their existing meaning and JavaScript updates. */
+html[data-faceattend-theme="sunshine"] .camera-status {
+  color:#c4eee1;background:#153631;border:1px solid #2a685a;
+}
+html[data-faceattend-theme="sunshine"] label {color:#dfe7fb;}
+html[data-faceattend-theme="sunshine"] input:not([type="checkbox"]),
+html[data-faceattend-theme="sunshine"] select,
+html[data-faceattend-theme="sunshine"] textarea {
+  color:#edf3ff;
+  background:#0d1930;
+  border:1px solid #405273;
+  border-radius:11px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.13);
+}
+html[data-faceattend-theme="sunshine"] input::placeholder {color:#94a6c4;opacity:1;}
+html[data-faceattend-theme="sunshine"] select option {background:#101b31;color:#f3f6ff;}
+html[data-faceattend-theme="sunshine"] input:not([type="checkbox"]):focus,
+html[data-faceattend-theme="sunshine"] select:focus,
+html[data-faceattend-theme="sunshine"] textarea:focus {
+  border-color:#a5a4ff;
+  outline:3px solid rgba(99,102,241,.22);
+}
+html[data-faceattend-theme="sunshine"] input[type="checkbox"]{accent-color:#10b981;}
+html[data-faceattend-theme="sunshine"] button:not(.school-tab):not(.school-primary):not(.school-secondary):not(.school-danger),
+html[data-faceattend-theme="sunshine"] .button {
+  color:#fff;
+  background:#4f46e5;
+  border:1px solid #716bed;
+  border-radius:11px;
+  box-shadow:0 5px 14px rgba(46,39,144,.21);
+}
+html[data-faceattend-theme="sunshine"] button:not(.school-tab):not(.school-primary):not(.school-secondary):not(.school-danger):hover,
+html[data-faceattend-theme="sunshine"] .button:hover {background:#6157f3;box-shadow:0 8px 17px rgba(46,39,144,.28);}
+html[data-faceattend-theme="sunshine"] button.secondary {color:#d9ffee!important;background:#16483e!important;border-color:#267867!important;}
+html[data-faceattend-theme="sunshine"] button.secondary:hover{background:#1d6252!important;}
+html[data-faceattend-theme="sunshine"] button.danger-outline {color:#ffb6bd!important;background:#3b1c2f!important;border-color:#af526a!important;box-shadow:none!important;}
+html[data-faceattend-theme="sunshine"] .tip {
+  color:#c4d4ee;
+  background:#152643;
+  border:1px solid #3b537c;
+  border-left:4px solid #818cf8;
+}
+html[data-faceattend-theme="sunshine"] .tip-yellow{border-left-color:#10b981;}
+html[data-faceattend-theme="sunshine"] #candidate {color:#d9fff2;background:#103e35;border-color:#25876e;}
+html[data-faceattend-theme="sunshine"] .scroll,
+html[data-faceattend-theme="sunshine"] table,
+html[data-faceattend-theme="sunshine"] td,
+html[data-faceattend-theme="sunshine"] th {
+  color:#dce8ff;
+  background:#111f38;
+  border-color:#344563;
+}
+html[data-faceattend-theme="sunshine"] th {color:#bfc8ff;background:#262451;}
+html[data-faceattend-theme="sunshine"] tr:nth-child(even) td{background:#172844;}
+html[data-faceattend-theme="sunshine"] td button {color:#ffc6cb!important;background:#412033!important;border-color:#9d5668!important;box-shadow:none!important;}
+html[data-faceattend-theme="sunshine"] .footer{color:#9eafcb;}
+/* Only the AFTER-LOGIN classroom / session / report workspace. */
+html[data-faceattend-theme="sunshine"] #school-section {
+  --s-ink:#edf3ff;--s-muted:#a6b6d0;--s-line:#334564;
+  --s-paper:#15233d;--s-blue:#6366f1;--s-indigo:#4f46e5;
+  --s-cyan:#10b981;--s-shadow:0 13px 31px rgba(1,8,24,.24);
+  color:#eaf0ff;
+}
+html[data-faceattend-theme="sunshine"] #school-section .school-hero {
+  color:#f4f7ff;
+  background: radial-gradient(circle at 88% 9%,rgba(16,185,129,.18),transparent 34%),
+              linear-gradient(125deg,#141f3b,#25245b 70%,#252862);
+  border:1px solid #414381;
+  box-shadow:0 12px 34px rgba(1,8,24,.24);
+}
+html[data-faceattend-theme="sunshine"] #school-section .school-hero p{color:#c1c9ed;}
+html[data-faceattend-theme="sunshine"] #school-section .school-eyebrow{color:#b9baff;}
+html[data-faceattend-theme="sunshine"] #school-section #school-heading{color:#f5f7ff;}
+html[data-faceattend-theme="sunshine"] #school-section #school-heading span{color:#a7a9ff;}
+html[data-faceattend-theme="sunshine"] #school-section .school-panel,
+html[data-faceattend-theme="sunshine"] #school-section .school-toolbar,
+html[data-faceattend-theme="sunshine"] #school-section .school-message,
+html[data-faceattend-theme="sunshine"] #school-section .school-details,
+html[data-faceattend-theme="sunshine"] #school-section .school-roster,
+html[data-faceattend-theme="sunshine"] #school-section .school-table-wrap {
+  color:#e7edff;background:#14233c;border:1px solid #354966;
+  box-shadow:var(--s-shadow);
+}
+html[data-faceattend-theme="sunshine"] #school-section .school-message.school-error{color:#ffc6ce;background:#351d32;border-color:#89455e;}
+html[data-faceattend-theme="sunshine"] #school-section .school-message.school-error:before{color:#fb7185;}
+html[data-faceattend-theme="sunshine"] #school-section .school-tab,
+html[data-faceattend-theme="sunshine"] #school-section .school-tabs{
+  color:#b9c6ec;background:#101e38;border-color:#354765;box-shadow:none;
+}
+html[data-faceattend-theme="sunshine"] #school-section .school-tab.is-active{
+  color:#dcdeff;background:#29255d;border-color:#6659b8;
+}
+html[data-faceattend-theme="sunshine"] #school-section .school-panel-head h3,
+html[data-faceattend-theme="sunshine"] #school-section .school-section-heading h3,
+html[data-faceattend-theme="sunshine"] #school-section .school-report-top,
+html[data-faceattend-theme="sunshine"] #school-section .school-subhead,
+html[data-faceattend-theme="sunshine"] #school-section .school-howto strong,
+html[data-faceattend-theme="sunshine"] #school-section .school-student-info,
+html[data-faceattend-theme="sunshine"] #school-section .school-chip b{color:#f0f4ff;}
+html[data-faceattend-theme="sunshine"] #school-section .school-section-heading p,
+html[data-faceattend-theme="sunshine"] #school-section .school-kicker,
+html[data-faceattend-theme="sunshine"] #school-section .school-helper,
+html[data-faceattend-theme="sunshine"] #school-section .school-empty,
+html[data-faceattend-theme="sunshine"] #school-section .school-panel-head p,
+html[data-faceattend-theme="sunshine"] #school-section .school-howto,
+html[data-faceattend-theme="sunshine"] #school-section .school-chip,
+html[data-faceattend-theme="sunshine"] #school-section .school-student-info small,
+html[data-faceattend-theme="sunshine"] #school-section .school-advanced p{color:#a7b8d4;}
+html[data-faceattend-theme="sunshine"] #school-section label{color:#dce6fb;}
+html[data-faceattend-theme="sunshine"] #school-section input,
+html[data-faceattend-theme="sunshine"] #school-section select {
+  color:#edf4ff;background:#0c1a31;border:1px solid #425676;
+  box-shadow:none;
+}
+html[data-faceattend-theme="sunshine"] #school-section input:focus,
+html[data-faceattend-theme="sunshine"] #school-section select:focus{border-color:#908cfb;outline:3px solid rgba(99,102,241,.20);}
+html[data-faceattend-theme="sunshine"] #school-section .school-context-status,
+html[data-faceattend-theme="sunshine"] #school-section .school-soft-pill,
+html[data-faceattend-theme="sunshine"] #school-section .school-active,
+html[data-faceattend-theme="sunshine"] #school-section .school-count{
+  color:#bdfae2;background:#103b32;border:1px solid #266556;
+}
+html[data-faceattend-theme="sunshine"] #school-section .school-step,
+html[data-faceattend-theme="sunshine"] #school-section .school-total {
+  color:#eef0ff;background:linear-gradient(135deg,#4640b9,#5145d7);border:1px solid #726be4;
+  box-shadow:none;
+}
+html[data-faceattend-theme="sunshine"] #school-section .school-primary {
+  color:#fff;background:#4f46e5;border:1px solid #7874f2;box-shadow:none;
+}
+html[data-faceattend-theme="sunshine"] #school-section .school-primary:hover{background:#6158ed;}
+html[data-faceattend-theme="sunshine"] #school-section .school-secondary,
+html[data-faceattend-theme="sunshine"] #school-section a.school-link {
+  color:#d0f9e9;background:#143c34;border:1px solid #287867;box-shadow:none;
+}
+html[data-faceattend-theme="sunshine"] #school-section .school-danger {
+  color:#ffb4bf;background:#391f32;border:1px solid #98536b;
+}
+html[data-faceattend-theme="sunshine"] #school-section .school-camera-card{
+  background: radial-gradient(circle at 48% 0,rgba(99,102,241,.17),transparent 58%),
+              linear-gradient(140deg,#111f3e,#172d48);
+  border:1px solid #3b5181;
+}
+html[data-faceattend-theme="sunshine"] #school-section .school-scan-symbol{color:#818cf8;filter:none;}
+html[data-faceattend-theme="sunshine"] #school-section .school-camera-card strong{color:#e2e9ff;}
+html[data-faceattend-theme="sunshine"] #school-section .school-camera-card p{color:#9bb2d4;}
+html[data-faceattend-theme="sunshine"] #school-section .school-chip {
+  background:#1b2d47;border:1px solid #39506f;
+}
+html[data-faceattend-theme="sunshine"] #school-section .school-details summary{color:#c4caff;}
+html[data-faceattend-theme="sunshine"] #school-section .school-howto{border-color:#354867;}
+html[data-faceattend-theme="sunshine"] #school-section .school-student{border-color:#33465e;}
+html[data-faceattend-theme="sunshine"] #school-section table,
+html[data-faceattend-theme="sunshine"] #school-section td,
+html[data-faceattend-theme="sunshine"] #school-section th {
+  color:#dce8ff;background:#111f38;border-color:#30435e;
+}
+html[data-faceattend-theme="sunshine"] #school-section th{color:#c5c8ff;background:#252451;}
+html[data-faceattend-theme="sunshine"] #school-section .school-pill {color:#b6f4d7;background:#174536;}
+html[data-faceattend-theme="sunshine"] #school-section .school-pill.school-pending {color:#f6d9a1;background:#4a3826;}
+/* Theme selector remains functional and inside the authenticated dashboard. */
+html[data-faceattend-theme="sunshine"] .faceattend-theme-picker {
+  background:#182640!important;border:1px solid #354969!important;
+  color:#dfe8ff!important;box-shadow:0 7px 27px rgba(0,0,0,.28)!important;
+}
+html[data-faceattend-theme="sunshine"] .faceattend-theme-picker label {color:#dce8ff!important;}
+html[data-faceattend-theme="sunshine"] .faceattend-theme-picker select {
+  color:#e6edff!important;background:#23335c!important;border:1px solid #525c9d!important;
+}
+@media (prefers-reduced-motion:reduce){
+  html[data-faceattend-theme="sunshine"] *,
+  html[data-faceattend-theme="sunshine"] *:before,
+  html[data-faceattend-theme="sunshine"] *:after {transition:none!important;animation:none!important;}
+}
+
+</style>
+<style id="fa-navy-motion">
+#fa-teal-sky{display:none}
+body.faceattend-faculty{isolation:isolate}
+body.faceattend-faculty>#fa-teal-sky{display:block;position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+#fa-teal-sky::after{content:"";position:absolute;inset:-35%;background:linear-gradient(53deg,transparent 26%,rgba(19,185,185,.14) 36%,rgba(55,213,217,.32) 41%,transparent 52%,transparent 58%,rgba(26,188,201,.23) 65%,transparent 73%);animation:fa-navy-float 9s ease-in-out infinite alternate}
+@keyframes fa-navy-float{from{transform:translate(-10%,-4%) rotate(-3deg)}to{transform:translate(11%,5%) rotate(4deg)}}
+@media(prefers-reduced-motion:reduce){#fa-teal-sky::after{animation:none}}
+</style><style>
+body[data-fa-sky]{isolation:isolate}
+body[data-fa-sky]::before,body[data-fa-sky]::after,body[data-fa-sky] #fa-teal-sky,body[data-fa-sky] #admin-gallery-arcs{visibility:hidden!important}
+body[data-fa-sky]>#fa-role-sky{display:block!important;position:fixed!important;inset:0!important;z-index:-1!important;width:100vw!important;height:100vh!important;pointer-events:none!important;background-color:#0b0b10}
+#fa-role-sky[hidden],#fa-role-play[hidden]{display:none!important}
+#fa-role-scenes{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:5px;padding:8px 12px;position:relative;z-index:1}
+#fa-role-scenes button{font:600 13px/1.3 system-ui;padding:7px 12px;border:1px solid #635e75;border-radius:9px;background:#25232e;color:#efecf7;cursor:pointer}
+#fa-role-scenes button[aria-pressed="true"]{background:#dbd2fc;color:#21192f}
+#fa-role-sky.mosaic-software{background-color:#0c0d15;background-image:repeating-linear-gradient(0deg,transparent 0 20px,#08090c 21px 24px),repeating-linear-gradient(90deg,transparent 0 20px,#08090c 21px 24px),radial-gradient(ellipse at 45% 48%,#718098,#282b3c 32%,#0c0d15 68%);background-size:24px 24px,24px 24px,165% 160%;animation:fa-role-drift 8s ease-in-out infinite alternate}
+body[data-fa-scene="1"] #fa-role-sky.mosaic-software{background-image:repeating-linear-gradient(122deg,#111b31 0%,#31475b 11%,#655370 14%,#1b263a 23%);background-size:185% 170%}
+body[data-fa-scene="2"] #fa-role-sky.mosaic-software{background-image:repeating-radial-gradient(ellipse at 20% 130%,#180e22 0%,#482143 15%,#955e84 17%,#2d172d 20%);background-size:180% 160%}
+@keyframes fa-role-drift{from{background-position:0% 0%}to{background-position:100% 90%}}
+</style></head>
+<body><canvas hidden id="fa-role-sky" aria-hidden="true"></canvas><div id="fa-teal-sky" aria-hidden="true"></div>
   <header class="topbar">
     <div class="topbar-inner">
       <div class="identity">
@@ -717,9 +1018,11 @@
           <p class="brand-subtitle">Java Face Attendance &nbsp;•&nbsp; Local teacher workspace</p>
         </div>
       </div>
+      <a class="school-nav-link" href="#school-section">Classrooms</a>
+      <a class="school-nav-link" id="fa-admin-link" href="/admin.html" hidden>Admin Console</a>
       <button id="logout" type="button">Sign out</button>
     </div>
-  </header>
+  </header><div id="fa-role-scenes" role="group" aria-label="Background scene"><button type="button" data-choice="0" aria-pressed="true">Mosaic</button><button type="button" data-choice="1" aria-pressed="false">Prism</button><button type="button" data-choice="2" aria-pressed="false">Waves</button><button type="button" data-choice="3" aria-pressed="false">Original</button><button type="button" id="fa-role-play">Pause motion</button></div>
 
   <div id="message" role="status" aria-live="polite">Ready to begin.</div>
 
@@ -845,7 +1148,114 @@
         </table>
       </div>
     </section>
-    <footer class="footer">Made for local use · Attendance confirmation is always teacher supervised.</footer>
+    
+<section id="school-section" class="school-hub school-v2" aria-labelledby="school-heading">
+  <header class="school-hero">
+    <div>
+      <span class="school-eyebrow">FACEATTEND / ACADEMIC WORKSPACE</span>
+      <h2 id="school-heading">Make every class <span>count.</span></h2>
+      <p>Choose your classroom. Take attendance. Review the records. That's it.</p>
+    </div>
+    <div class="school-hero-mark" aria-hidden="true">✳</div>
+  </header>
+
+  <div class="school-toolbar" aria-label="Classroom context">
+    <label class="school-toolbar-class" for="school-classroom">🏫 Active classroom
+      <select id="school-classroom"><option value="">Loading classrooms…</option></select>
+    </label>
+    <label class="school-toolbar-session" for="school-session">📅 Saved class session
+      <select id="school-session"><option value="">No session selected</option></select>
+    </label>
+    <div class="school-context-status" id="school-context-status" role="status">Choose a classroom to begin</div>
+  </div>
+
+  <nav class="school-tabs" aria-label="Classroom workspace">
+    <button type="button" class="school-tab is-active" id="school-tab-attendance" data-school-tab="attendance" aria-controls="school-pane-attendance" aria-selected="true">📷 Take Attendance</button>
+    <button type="button" class="school-tab" id="school-tab-classes" data-school-tab="classes" aria-controls="school-pane-classes" aria-selected="false">🏫 Manage Classes</button>
+    <button type="button" class="school-tab" id="school-tab-reports" data-school-tab="reports" aria-controls="school-pane-reports" aria-selected="false">📊 Reports</button>
+  </nav>
+
+  <div id="school-message" class="school-message" role="status" aria-live="polite">Your workspace is ready.</div>
+
+  <div id="school-pane-attendance" class="school-pane" role="region" aria-label="Take attendance">
+    <div class="school-section-heading"><div><span class="school-kicker">DAILY WORKFLOW</span><h3>Take class attendance</h3><p>Pick a subject, date and period. We'll link it to your existing face attendance camera.</p></div><span class="school-soft-pill">Teacher confirms every match</span></div>
+    <div class="school-attendance-grid">
+      <div class="school-panel school-session-panel">
+        <div class="school-panel-head"><span class="school-step">01</span><div><h3>New attendance session</h3><p>Usually just three selections</p></div></div>
+        <form id="school-start-session" class="school-form">
+          <label for="school-session-subject">Subject
+            <select id="school-session-subject" required><option value="">Choose a subject</option></select>
+          </label>
+          <div class="school-fields-2">
+            <label for="school-date">Date<input id="school-date" type="date" required></label>
+            <label for="school-period">Class period<select id="school-period" required>
+              <option value="1">Period 1</option><option value="2">Period 2</option><option value="3">Period 3</option>
+              <option value="4">Period 4</option><option value="5">Period 5</option><option value="6">Period 6</option>
+              <option value="7">Period 7</option><option value="8">Period 8</option><option value="9">Period 9</option>
+              <option value="10">Period 10</option><option value="11">Period 11</option><option value="12">Period 12</option>
+            </select></label>
+          </div>
+          <button type="submit" class="school-primary school-wide">+ Create &amp; use session</button>
+        </form>
+        <div class="school-howto"><strong>How it works</strong><span>1. Choose class and subject</span><span>2. Create or open a saved session</span><span>3. Start camera in the attendance area above</span></div>
+      </div>
+      <div class="school-panel school-live-panel">
+        <div class="school-panel-head"><span class="school-step">02</span><div><h3>Attendance controls</h3><p>Link a session to the existing camera</p></div></div>
+        <div class="school-camera-card"><div class="school-scan-symbol" aria-hidden="true"><svg viewBox="0 0 100 100" width="96" height="96" role="presentation"><path d="M22 9H9v13M78 9h13v13M9 78v13h13M91 78v13H78" stroke="currentColor" stroke-width="7" fill="none" stroke-linecap="round"/><circle cx="50" cy="45" r="16" fill="none" stroke="currentColor" stroke-width="4"/><path d="M23 81c0-21 54-21 54 0" fill="none" stroke="currentColor" stroke-width="4"/></svg></div><strong>Ready for face attendance</strong><p>Camera and recognition still run in the original attendance area. We only choose which class session receives the marks.</p></div>
+        <div id="school-active" class="school-active">Select a saved session to continue.</div>
+        <div class="school-session-actions">
+          <button type="button" id="school-use" class="school-primary">📷 Go to camera &amp; take attendance</button>
+          <button type="button" id="school-close" class="school-danger">Close session</button>
+        </div>
+        <p class="school-helper">Important: Recognition suggests a candidate; a teacher must verify before marking.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="school-pane-classes" class="school-pane" role="region" aria-label="Manage classes" hidden>
+    <div class="school-section-heading"><div><span class="school-kicker">ONE-TIME SETUP</span><h3>Manage classes &amp; students</h3><p>Create your classroom once. Everyday attendance happens in the first tab.</p></div></div>
+    <div class="school-manage-grid">
+      <div class="school-panel">
+        <div class="school-panel-head"><span class="school-step">A</span><div><h3>Classroom</h3><p>Select an existing class above or add a new one</p></div></div>
+        <details class="school-details" id="school-create-class-details"><summary>+ Create a new classroom</summary>
+          <form id="school-create-class" class="school-form school-detail-body">
+            <label>Class / branch<input id="school-class-name" required maxlength="80" placeholder="B.Tech CSE"></label>
+            <div class="school-fields-2"><label>Section<input id="school-class-section" required maxlength="30" placeholder="A"></label><label>Academic year<input id="school-class-year" required maxlength="20" placeholder="2026-27"></label></div>
+            <button type="submit" class="school-primary">Save classroom</button>
+          </form>
+        </details>
+        <div class="school-subhead">Assigned subjects</div>
+        <div id="school-subject-list" class="school-chips"><span class="school-empty">Choose a classroom to see its subjects.</span></div>
+      </div>
+      <div class="school-panel">
+        <div class="school-panel-head"><span class="school-step">B</span><div><h3>Subjects &amp; faculty</h3><p>Create and assign in one go</p></div></div>
+        <form id="school-create-subject" class="school-form">
+          <div class="school-fields-2"><label>Subject code<input id="school-code" required maxlength="25" placeholder="JAVA201"></label><label>Subject name<input id="school-title" required maxlength="120" placeholder="Java Programming"></label></div>
+          <label>Faculty name<input id="school-new-faculty" required maxlength="100" placeholder="Faculty full name"></label>
+          <button type="submit" class="school-primary">+ Save &amp; assign subject</button>
+        </form>
+        <details class="school-details"><summary>Already created this subject? Assign it here</summary>
+          <form id="school-assign-subject" class="school-form school-detail-body"><label>Existing subject<select id="school-subject-catalog"></select></label><label>Faculty name<input id="school-faculty" required maxlength="100" placeholder="Faculty full name"></label><button type="submit" class="school-secondary">Assign selected subject</button></form>
+        </details>
+      </div>
+      <div class="school-panel school-roster-panel">
+        <div class="school-panel-head"><span class="school-step">C</span><div><h3>Student roster</h3><p>Link registered students to this classroom</p></div></div>
+        <form id="school-add-student" class="school-form school-roster-form"><label>Registered student<select id="school-student-catalog"></select></label><button type="submit" class="school-primary">+ Add to classroom</button><button type="button" id="school-reload-students" class="school-secondary">↻ Refresh list</button></form>
+        <div class="school-roster-top"><strong>Students in this class</strong><span id="school-roster-count" class="school-count">0</span></div>
+        <div id="school-roster" class="school-roster"><div class="school-empty">Choose a classroom to view students.</div></div>
+        <p class="school-helper">New student aa? First main website lo Register Student use cheyyi. Face samples and earlier records safe ga untayi.</p>
+      </div>
+    </div>
+    <details class="school-details school-advanced"><summary>Advanced · Standalone attendance session</summary><div class="school-detail-body"><p>This uses the original attendance identifier instead of a class/subject session.</p><button type="button" id="school-manual" class="school-secondary">Use original manual session</button></div></details>
+  </div>
+
+  <div id="school-pane-reports" class="school-pane" role="region" aria-label="Attendance reports" hidden>
+    <div class="school-section-heading"><div><span class="school-kicker">RECORDS & INSIGHTS</span><h3>Session attendance report</h3><p>Choose a saved class session at the top to view records. Not marked ≠ absent.</p></div><strong id="school-present" class="school-total">0 / 0 present</strong></div>
+    <div class="school-report school-panel"><div class="school-report-top"><span>Class session attendance</span><a id="school-export" class="school-link" href="#school-section" aria-disabled="true">⬇ Download class CSV</a></div><div class="school-table-wrap"><table><thead><tr><th>Roll</th><th>Student</th><th>Status</th><th>Marked at</th></tr></thead><tbody id="school-report-body"><tr><td colspan="4">Select a saved session to view records.</td></tr></tbody></table></div></div>
+  </div>
+</section>
+
+<footer class="footer">Made for local use · Attendance confirmation is always teacher supervised.</footer>
   </main>
 
   <script src="/app.js"></script>
@@ -881,5 +1291,7 @@
   /* No reload, document.write or camera track stop: preserve /app.js handlers and video stream. */
 })();
 </script>
+<script src="/school.js"></script>
+<script src="/workspace-role.js?faScenes=3"></script>
 </body>
 </html>

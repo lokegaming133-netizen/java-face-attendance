@@ -1,0 +1,97 @@
+/* FaceAttend Smart Classroom v2: scoped styling; does not change login, camera or main app. */
+#school-section{--s-ink:#142547;--s-muted:#5b7193;--s-line:#dce6f7;--s-paper:rgba(255,255,255,.96);--s-blue:#2563eb;--s-indigo:#6353df;--s-cyan:#06bbdb;--s-shadow:0 14px 36px rgba(25,66,121,.08);box-sizing:border-box;max-width:1240px;margin:35px auto 24px;padding:0 10px;color:var(--s-ink);font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+#school-section *,#school-section *:before,#school-section *:after{box-sizing:border-box}
+#school-section [hidden]{display:none!important}
+#school-section .school-hero{position:relative;overflow:hidden;display:flex;justify-content:space-between;gap:24px;align-items:center;border-radius:29px;padding:34px clamp(22px,4vw,52px);background:radial-gradient(circle at 78% 14%,#76e4ff50 0%,transparent 30%),linear-gradient(116deg,#071d56 0%,#294bca 62%,#7b57e9 100%);color:#fff;box-shadow:0 22px 45px #304bc12a}
+#school-section .school-hero:after{content:"";position:absolute;right:-100px;top:-170px;width:360px;height:360px;border:1px solid #ffffff38;border-radius:50%;pointer-events:none}
+#school-section .school-eyebrow{display:block;margin-bottom:10px;font-size:11px;letter-spacing:.19em;font-weight:800;color:#b5f3ff}
+#school-section #school-heading{margin:0;font-size:clamp(27px,3.6vw,47px);font-weight:870;letter-spacing:-.055em;line-height:1.13;color:#fff}
+#school-section #school-heading span{color:#9af4ff}
+#school-section .school-hero p{margin:12px 0 0;color:#e0e8ff;font-size:14px;line-height:1.6;max-width:600px}
+#school-section .school-hero-mark{position:relative;z-index:1;display:grid;place-items:center;flex:none;border:1px solid #a4e8ff77;background:linear-gradient(140deg,#a9dcff3b,#fff1);width:100px;height:100px;border-radius:28px;font-size:58px;color:#a7f8ff;transform:rotate(-10deg)}
+#school-section .school-toolbar{margin:20px 0 12px;padding:18px;display:grid;grid-template-columns:minmax(240px,1.08fr) minmax(240px,1.07fr) auto;align-items:end;gap:14px;border:1px solid var(--s-line);border-radius:20px;background:var(--s-paper);box-shadow:var(--s-shadow)}
+#school-section label{display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:770;color:var(--s-ink);line-height:1.4}
+#school-section input,#school-section select{display:block;min-width:0;width:100%;height:45px;border:1px solid #c9d8ef;border-radius:12px;padding:10px 13px;color:#192d54;background:#f8faff;box-shadow:inset 0 1px 3px #b6c5dd20;font-family:inherit;font-size:13px;font-weight:540}
+#school-section input:focus,#school-section select:focus{outline:3px solid #567fea35;border-color:#4881ed}
+#school-section .school-context-status{font-size:12px;font-weight:740;background:#eff9f4;color:#168465;border:1px solid #c1f0da;border-radius:12px;padding:13px 15px;min-width:170px;text-align:center;white-space:nowrap}
+#school-section .school-tabs{display:flex;gap:7px;padding:7px;background:#eaf1ff;border:1px solid #dbe4fb;border-radius:17px;width:max-content;max-width:100%;margin:15px 0}
+#school-section button,#school-section a.school-link{margin:0;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:43px;padding:11px 16px;border-radius:12px;font-family:inherit;font-size:13px;font-weight:800;line-height:1.2;text-decoration:none;cursor:pointer;transition:transform .16s,box-shadow .16s,border-color .16s;white-space:normal}
+#school-section button:hover:not(:disabled),#school-section a.school-link:hover:not([aria-disabled="true"]){transform:translateY(-1px)}
+#school-section button:disabled,#school-section a[aria-disabled="true"]{opacity:.46;cursor:not-allowed;pointer-events:none}
+#school-section .school-tab{border:1px solid transparent;background:transparent;color:#49618e;box-shadow:none;padding:12px 20px;min-width:156px;white-space:nowrap}
+#school-section .school-tab.is-active{background:#fff;border-color:#d4e0fa;color:#154dbd;box-shadow:0 7px 18px #4466aa24}
+#school-section .school-tab:focus-visible{outline:3px solid #55a4ff;outline-offset:2px}
+#school-section .school-message{display:flex;align-items:center;gap:10px;padding:12px 17px;margin:0 0 16px;color:#557091;background:#ffffffd9;border:1px solid var(--s-line);border-radius:14px;font-size:12px;font-weight:660}
+#school-section .school-message::before{content:"●";color:#15b98f}
+#school-section .school-message.school-error{border-color:#ffd7df;background:#fff7f9;color:#ad304a}
+#school-section .school-message.school-error::before{color:#ea4f72}
+#school-section .school-section-heading{display:flex;gap:12px;align-items:center;justify-content:space-between;margin:15px 0 18px}
+#school-section .school-kicker{font-size:10px;letter-spacing:.19em;color:#6579a8;font-weight:900}
+#school-section .school-section-heading h3{font-size:clamp(23px,3vw,32px);letter-spacing:-.035em;color:#132952;margin:5px 0 4px;line-height:1.15}
+#school-section .school-section-heading p{font-size:13px;color:var(--s-muted);margin:0;line-height:1.5}
+#school-section .school-soft-pill{flex:none;border-radius:20px;background:#e8f9f3;border:1px solid #c1eee0;color:#138565;font-size:11px;font-weight:800;padding:9px 13px}
+#school-section .school-attendance-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:stretch}
+#school-section .school-manage-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+#school-section .school-roster-panel{grid-column:1/-1}
+#school-section .school-panel{min-width:0;padding:24px;border:1px solid var(--s-line);background:var(--s-paper);border-radius:22px;box-shadow:var(--s-shadow)}
+#school-section .school-panel-head{display:flex;align-items:center;gap:12px;margin-bottom:21px}
+#school-section .school-step{width:43px;height:43px;flex:none;display:grid;place-items:center;background:linear-gradient(135deg,#2e8ef7,#7253e8);color:#fff;border-radius:14px;font-size:14px;font-weight:900;box-shadow:0 8px 16px #3d67d934}
+#school-section .school-panel-head h3{font-size:19px;letter-spacing:-.03em;line-height:1.2;margin:0;color:var(--s-ink)}
+#school-section .school-panel-head p{font-size:12px;line-height:1.4;color:var(--s-muted);margin:5px 0 0}
+#school-section .school-form{display:flex;flex-direction:column;gap:15px;margin:0}
+#school-section .school-fields-2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+#school-section .school-primary{border:1px solid #3876e9;color:#fff;background:linear-gradient(110deg,#2389f2,#6353e3);box-shadow:0 9px 20px #4f66d32b}
+#school-section .school-secondary{border:1px solid #c5d8ff;color:#234dba;background:#eaf1ff;box-shadow:0 3px 8px #c4d6ed35}
+#school-section .school-danger{border:1px solid #f5ccd4;color:#b43b53;background:#fff3f5;box-shadow:none}
+#school-section .school-wide{width:100%;margin-top:4px}
+#school-section .school-howto{border-top:1px solid #e4eaf5;margin-top:20px;padding-top:16px;display:flex;flex-direction:column;gap:7px;color:#52698e;font-size:12px}
+#school-section .school-howto strong{color:#253d73;font-size:13px;margin-bottom:2px}
+#school-section .school-camera-card{display:flex;flex-direction:column;align-items:center;text-align:center;justify-content:center;padding:22px 18px;min-height:216px;border:1px solid #cbdcf7;border-radius:20px;background:radial-gradient(circle at 50% 0,#d7f9ff 0,transparent 60%),linear-gradient(135deg,#ecf4ff,#f5efff)}
+#school-section .school-scan-symbol{width:108px;height:108px;color:#2876e8;display:grid;place-items:center;filter:drop-shadow(0 6px 10px #2475e43b)}
+#school-section .school-camera-card strong{font-size:18px;letter-spacing:-.035em;color:#1d3c80}
+#school-section .school-camera-card p{font-size:12px;color:#547099;max-width:350px;line-height:1.6;margin:9px 0 0}
+#school-section .school-active{margin:16px 0 12px;padding:12px 14px;border:1px solid #d5e4f7;background:#f0f6ff;border-radius:12px;color:#365c9d;font-size:12px;font-weight:680;line-height:1.5}
+#school-section .school-session-actions{display:flex;gap:9px;flex-wrap:wrap}
+#school-section .school-session-actions #school-use{flex:1}
+#school-section .school-helper{color:#637998;line-height:1.6;font-size:12px;margin:15px 0 0}
+#school-section .school-subhead{margin:22px 0 10px;font-size:13px;font-weight:830}
+#school-section .school-chips{display:flex;gap:9px;flex-wrap:wrap}
+#school-section .school-chip{background:#edf3ff;border:1px solid #d4e3fc;border-radius:12px;display:flex;flex-direction:column;gap:3px;padding:10px 12px;color:#466391;font-size:12px}
+#school-section .school-chip b{color:#234177}
+#school-section .school-details{border:1px solid #d8e4f8;background:#f8fbff;border-radius:13px;margin-top:12px}
+#school-section .school-details summary{padding:13px 16px;cursor:pointer;color:#2956b7;font-size:13px;font-weight:820;list-style:none}
+#school-section .school-details summary::-webkit-details-marker{display:none}
+#school-section .school-details summary:before{content:"＋";margin-right:9px}
+#school-section .school-details[open] summary:before{content:"−"}
+#school-section .school-detail-body{padding:4px 16px 16px}
+#school-section .school-roster-form{display:grid;grid-template-columns:minmax(200px,1fr) auto auto;align-items:end;gap:10px}
+#school-section .school-roster-top{display:flex;align-items:center;justify-content:space-between;padding:19px 0 10px;font-size:13px}
+#school-section .school-count{background:#eaf2ff;color:#275abf;padding:5px 10px;border-radius:22px;font-size:12px}
+#school-section .school-roster{max-height:255px;overflow:auto;border:1px solid #deebf9;border-radius:14px;background:#fbfdff}
+#school-section .school-student{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;gap:10px;border-bottom:1px solid #e9eff9}
+#school-section .school-student:last-child{border-bottom:none}
+#school-section .school-student-info{min-width:0;display:flex;flex-direction:column;gap:2px;font-size:13px;color:#213b67}
+#school-section .school-student-info small{font-size:11px;color:#6a7e9f}
+#school-section .school-student button{min-height:31px;padding:6px 11px;font-size:11px}
+#school-section .school-empty{padding:15px;color:#637695;font-size:12px}
+#school-section .school-advanced{margin-top:16px}
+#school-section .school-advanced p{font-size:12px;color:#697a9c}
+#school-section .school-total{white-space:nowrap;border-radius:14px;padding:13px 17px;color:#fff;background:linear-gradient(120deg,#2483ed,#6150e4);font-size:14px;box-shadow:0 8px 16px #3f60da2d}
+#school-section .school-report-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:17px;font-size:14px;font-weight:850}
+#school-section a.school-link{border:1px solid #b8d6fa;background:#eaf5ff;color:#1b5fb2;white-space:nowrap}
+#school-section .school-table-wrap{overflow:auto;border:1px solid #e1eaf9;border-radius:13px}
+#school-section table{width:100%;border-collapse:collapse;color:#25406e;background:#fff;font-size:13px;text-align:left}
+#school-section th{background:#ecf3ff;padding:14px 15px;font-size:12px;color:#2c4e85}
+#school-section td{border-top:1px solid #eaf0fa;padding:12px 15px;font-size:12px}
+#school-section .school-pill{display:inline-block;border-radius:100px;padding:6px 10px;background:#ddf7e9;color:#28735b;font-weight:800;font-size:11px}
+#school-section .school-pill.school-pending{background:#fff4dc;color:#916c37}
+/* Existing FaceAttend Neumorphism is respected, without touching the theme switcher. */
+html[data-faceattend-theme="neo"] #school-section{--s-paper:rgba(255,255,255,.83);--s-line:#d3ddf6;--s-shadow:0 14px 30px rgba(81,85,158,.12),inset 0 1px 0 #fff}
+html[data-faceattend-theme="neo"] #school-section .school-toolbar{backdrop-filter:blur(10px)}
+@media(max-width:1020px){#school-section .school-toolbar{grid-template-columns:1fr 1fr}#school-section .school-context-status{grid-column:1/-1;text-align:left}#school-section .school-manage-grid{grid-template-columns:1fr}}
+@media(max-width:840px){#school-section .school-attendance-grid{grid-template-columns:1fr}#school-section .school-hero-mark{display:none}}
+@media(max-width:610px){#school-section{padding:0 3px;margin:22px auto}#school-section .school-hero{padding:24px 21px;border-radius:21px}#school-section .school-toolbar{grid-template-columns:1fr;padding:13px;border-radius:16px}#school-section .school-context-status{grid-column:auto}#school-section .school-tabs{display:grid;grid-template-columns:repeat(3,1fr);width:100%;gap:3px;padding:5px}#school-section .school-tab{min-width:0!important;padding:9px 4px;font-size:11px;white-space:normal}#school-section .school-panel{padding:17px;border-radius:18px}#school-section .school-soft-pill{display:none}#school-section .school-fields-2{grid-template-columns:1fr}#school-section .school-roster-form{grid-template-columns:1fr}#school-section .school-session-actions>*{width:100%!important}#school-section .school-report-top{align-items:flex-start;flex-direction:column}#school-section .school-section-heading{align-items:flex-start;flex-direction:column}#school-section .school-total{align-self:flex-start}}
+/* The original top-level header's Classrooms link still leads here. */
+.school-nav-link{display:inline-flex;align-items:center;justify-content:center;min-height:40px;margin-left:auto;padding:7px 14px;border-radius:12px;text-decoration:none;font-family:system-ui,'Segoe UI',Arial,sans-serif;font-size:13px;font-weight:850;color:#18418e;background:linear-gradient(135deg,#e3f5ff,#e6ddff);box-shadow:0 5px 14px #14285c25;white-space:nowrap}
+.school-nav-link:focus-visible{outline:3px solid #3e89ed;outline-offset:3px}
+@media(max-width:620px){.school-nav-link{font-size:12px;padding:7px 8px;min-height:35px}}

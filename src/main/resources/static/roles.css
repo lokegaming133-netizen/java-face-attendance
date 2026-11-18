@@ -1,0 +1,42 @@
+/* Phase 2: isolated role administration styling; no camera or theme rules overridden. */
+#role-admin-panel {max-width:1220px;margin:28px auto;padding:0 24px 36px;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#162640;}
+#role-admin-panel * {box-sizing:border-box;}
+#role-admin-panel .role-shell {background:#f8fbff;border:1px solid #cfddf4;border-radius:25px;padding:25px;box-shadow:0 18px 50px #203d8116;}
+#role-admin-panel .role-header {display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:16px;}
+#role-admin-panel h2{margin:0;font-size:clamp(22px,3vw,31px);letter-spacing:-.04em;line-height:1.25;color:#1a2b56;}
+#role-admin-panel h3{font-size:17px;margin:0 0 12px;color:#20305a;}
+#role-admin-panel .role-kicker{color:#4468cc;text-transform:uppercase;letter-spacing:.16em;font-size:11px;font-weight:850;}
+#role-admin-panel p{margin:5px 0 0;color:#617090;font-size:13px;}
+#role-admin-panel .role-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;}
+#role-admin-panel .role-card{background:white;border:1px solid #dce6f8;border-radius:19px;padding:20px;box-shadow:0 8px 22px #2239750b;min-width:0;}
+#role-admin-panel .role-grid .role-wide{grid-column:1/-1;}
+#role-admin-panel label{display:grid;gap:5px;font-size:12px;font-weight:700;color:#3e506b;}
+#role-admin-panel input,#role-admin-panel select{min-height:42px;padding:9px 12px;font-size:14px;border:1px solid #c7d5ee;background:#faffff;border-radius:11px;color:#1f3558;width:100%;}
+#role-admin-panel form{display:grid;gap:12px;}
+#role-admin-panel .role-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+#role-admin-panel button{border:0;background:linear-gradient(110deg,#397bff,#8064f6);color:#fff;border-radius:11px;padding:11px 15px;font-weight:800;cursor:pointer;min-height:40px;}
+#role-admin-panel button.role-outline{background:#eef3fe;color:#3d5792;}
+#role-admin-panel button.role-danger{background:#fff0ef;color:#a12b28;}
+#role-admin-panel button:disabled{opacity:.5;cursor:wait;}
+#role-admin-panel .role-list{display:grid;gap:9px;max-height:400px;overflow-y:auto;}
+#role-admin-panel .role-item{border:1px solid #e1e9f7;background:#fbfdff;padding:11px 13px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+#role-admin-panel .role-item strong{font-size:13px;color:#2e456c;}
+#role-admin-panel .role-item small{display:block;color:#5c7292;font-size:11px;}
+#role-admin-panel .role-actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center;}
+#role-admin-panel .role-actions button{font-size:11px;padding:7px 10px;min-height:32px;}
+#role-admin-panel #role-feedback{min-height:40px;padding:10px 12px;background:#eaf4ff;border-radius:10px;color:#254771;margin-bottom:16px;font-size:13px;}
+#role-admin-panel #role-feedback.role-error{background:#fff2f0;color:#99231d;}
+#role-admin-link{display:none;background:#e9f1ff;color:#244eac;padding:9px 14px;border-radius:12px;font-size:13px;font-weight:800;text-decoration:none;}
+#role-admin-link.role-visible{display:inline-block;}
+body.faceattend-faculty section[aria-labelledby="register-title"],body.faceattend-faculty #sample,body.faceattend-faculty #delete,body.faceattend-faculty #save-gender,body.faceattend-faculty #existing-gender,body.faceattend-faculty label[for="existing-gender"],body.faceattend-faculty .register-actions a,body.faceattend-faculty #school-tab-classes,body.faceattend-faculty #school-pane-classes,body.faceattend-faculty #school-manual,body.faceattend-faculty #records td:last-child,body.faceattend-faculty .register-section th:last-child{display:none!important;}
+body.faceattend-faculty #school-pane-attendance{display:block;}
+body.faceattend-faculty .school-advanced{display:none!important;}
+html[data-faceattend-theme="neo"] #role-admin-panel .role-shell{background:#f4f7ff;border-color:#d6e2ff;box-shadow:0 18px 48px #4754dd20;}
+@media(max-width:850px){#role-admin-panel .role-grid{grid-template-columns:1fr;}#role-admin-panel .role-grid .role-wide{grid-column:auto;}}
+@media(max-width:480px){#role-admin-panel{padding:0 12px}#role-admin-panel .role-shell{padding:14px}#role-admin-panel .role-card{padding:14px}#role-admin-panel .role-row{grid-template-columns:1fr;}}
+#role-admin-panel[hidden],#role-admin-panel [hidden]{display:none!important;}
+
+/* Admin-only destructive action: distinct visual and keyboard focus state. */
+#role-admin-panel .role-actions button.role-delete{background:#b42332;color:#fff;border:1px solid #92202c;}
+#role-admin-panel .role-actions button.role-delete:hover{background:#921b28;}
+#role-admin-panel .role-actions button.role-delete:focus-visible{outline:3px solid #f5a5ac;outline-offset:2px;}

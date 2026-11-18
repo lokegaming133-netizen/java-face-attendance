@@ -1,0 +1,10 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Attendance · FaceAttend</title><link rel="stylesheet" href="/portal.css?v=mosaic2"></head>
+<body><!-- faceattend-student-mosaic-v1 --><canvas id="motion" aria-hidden="true"></canvas><div class="orb orb-a"></div><div class="orb orb-b"></div>
+<header><div class="brand"><span class="logo">✦</span><div><strong>FaceAttend</strong><small>Student attendance portal</small></div></div><div class="header-actions"><nav aria-label="Background scene"><button type="button" data-choice="0" aria-pressed="true">Mosaic</button><button type="button" data-choice="1" aria-pressed="false">Prism</button><button type="button" data-choice="2" aria-pressed="false">Waves</button></nav><button type="button" id="pause">Pause motion</button><label class="theme">🎨 Theme <select id="theme"><option value="sunshine">☀️ Sunshine</option><option value="neo">💜 FaceAttend</option></select></label><button type="button" id="logout">Sign out</button></div></header>
+<main><section class="hero"><div><span class="eyebrow">MY CAMPUS · MY ATTENDANCE</span><h1>Hello, <span id="student-name">Student</span> 👋</h1><p id="student-subtitle">Your academic attendance, in one secure view.</p></div><div class="hero-icon" aria-hidden="true">🎓</div></section>
+<div id="feedback" role="status">Loading your attendance…</div>
+<section class="summary"><div class="section-head"><h2>Subject-wise overview</h2><span>Only completed class sessions count</span></div><div id="subjects" class="subject-grid"></div></section>
+<section class="history"><div class="section-head"><h2>My class sessions</h2><span>Read-only · No editing allowed</span></div><div class="table-scroll"><table><thead><tr><th>Subject</th><th>Class</th><th>Date</th><th>Period</th><th>Status</th></tr></thead><tbody id="history"></tbody></table></div></section>
+<p class="disclaimer">A pending mark is not automatically an absence. If a record looks wrong, contact your faculty member.</p></main>
+<script src="/portal.js?v=mosaic2"></script></body></html>

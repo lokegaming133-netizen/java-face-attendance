@@ -26,3 +26,92 @@ CREATE TABLE IF NOT EXISTS face_embeddings(
     embedding BLOB NOT NULL,
     FOREIGN KEY(student) REFERENCES students(id)
 );
+
+-- Phase 1: Smart Classroom & Subject Management (additive, existing tables untouched)
+CREATE TABLE IF NOT EXISTS classrooms (
+    id VARCHAR(36) PRIMARY KEY,
+    name VARCHAR(80) NOT NULL,
+    section VARCHAR(30) NOT NULL,
+    academic_year VARCHAR(20) NOT NULL,
+    created_at VARCHAR(40) NOT NULL,
+    UNIQUE (name, section, academic_year)
+);
+
+CREATE TABLE IF NOT EXISTS subjects (
+    id VARCHAR(36) PRIMARY KEY,
+    code VARCHAR(25) NOT NULL UNIQUE,
+    title VARCHAR(120) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS classroom_subjects (
+    classroom_id VARCHAR(36) NOT NULL REFERENCES classrooms(id),
+    subject_id VARCHAR(36) NOT NULL REFERENCES subjects(id),
+    faculty_name VARCHAR(100) NOT NULL,
+    PRIMARY KEY (classroom_id, subject_id)
+);
+
+CREATE TABLE IF NOT EXISTS classroom_students (
+    classroom_id VARCHAR(36) NOT NULL REFERENCES classrooms(id),
+    student_id INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+    PRIMARY KEY (classroom_id, student_id)
+);
+
+CREATE TABLE IF NOT EXISTS class_sessions (
+    id VARCHAR(36) PRIMARY KEY,
+    classroom_id VARCHAR(36) NOT NULL REFERENCES classrooms(id),
+    subject_id VARCHAR(36) NOT NULL REFERENCES subjects(id),
+    session_date VARCHAR(10) NOT NULL,
+    period_number INTEGER NOT NULL,
+    faculty_name VARCHAR(100) NOT NULL,
+    session_key VARCHAR(45) NOT NULL UNIQUE,
+    status VARCHAR(10) NOT NULL DEFAULT 'OPEN',
+    created_at VARCHAR(40) NOT NULL,
+    UNIQUE (classroom_id, session_date, period_number)
+);
+
+-- Immutable attendance roster snapshot taken when a class session starts.
+-- Later classroom enrollment changes do not rewrite earlier session reports.
+CREATE TABLE IF NOT EXISTS class_session_students (
+    session_id VARCHAR(36) NOT NULL REFERENCES class_sessions(id),
+    student_id INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+    PRIMARY KEY (session_id, student_id)
+);
+
+-- Phase 2: role accounts and teacher-to-subject permission mappings (additive migration).
+CREATE TABLE IF NOT EXISTS app_users (
+    username VARCHAR(50) PRIMARY KEY,
+    password_hash VARCHAR(100) NOT NULL,
+    account_role VARCHAR(16) NOT NULL CHECK (account_role IN ('ADMIN','FACULTY','STUDENT')),
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    student_id INTEGER UNIQUE REFERENCES students(id) ON DELETE SET NULL,
+    created_at VARCHAR(40) NOT NULL
+);
+CREATE TABLE IF NOT EXISTS faculty_access (
+    username VARCHAR(50) NOT NULL REFERENCES app_users(username) ON DELETE CASCADE,
+    classroom_id VARCHAR(36) NOT NULL,
+    subject_id VARCHAR(36) NOT NULL,
+    PRIMARY KEY (username, classroom_id, subject_id),
+    FOREIGN KEY (classroom_id,subject_id) REFERENCES classroom_subjects(classroom_id,subject_id) ON DELETE CASCADE
+);
+
+-- Phase 3: Registered email and one-time codes. Existing users, attendance and faces remain untouched.
+ALTER TABLE app_users ADD COLUMN IF NOT EXISTS email VARCHAR(254);
+ALTER TABLE app_users ADD COLUMN IF NOT EXISTS auth_version INTEGER NOT NULL DEFAULT 0;
+CREATE UNIQUE INDEX IF NOT EXISTS uq_app_users_email ON app_users(email);
+CREATE TABLE IF NOT EXISTS email_auth_codes (
+    id VARCHAR(36) PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(254) NOT NULL,
+    purpose VARCHAR(8) NOT NULL,
+    code_hash VARCHAR(64) NOT NULL,
+    issued_at BIGINT NOT NULL,
+    expires_at BIGINT NOT NULL,
+    failed_attempts INTEGER NOT NULL DEFAULT 0,
+    consumed BOOLEAN NOT NULL DEFAULT FALSE
+);
+CREATE INDEX IF NOT EXISTS ix_email_auth_codes_user ON email_auth_codes(username, purpose, issued_at);
+CREATE TABLE IF NOT EXISTS email_auth_failures (
+    throttle_key VARCHAR(64) PRIMARY KEY,
+    attempts INTEGER NOT NULL,
+    lock_until BIGINT NOT NULL
+);

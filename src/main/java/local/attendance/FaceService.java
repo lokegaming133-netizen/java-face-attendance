@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bytedeco.javacpp.Loader;
 import org.bytedeco.opencv.opencv_java;
@@ -164,12 +165,13 @@ public class FaceService {
         return value;
     }
 
-    private int match(float[] face) {
+    private int match(float[] face, Set<Integer> permitted) {
         List<Embedding> data = saved();
         if (data.isEmpty()) return -1;
         Map<Integer, Double> bestByStudent = new HashMap<>();
         for (Embedding sample : data) {
-            bestByStudent.merge(sample.studentId(), cosine(face, sample.vector()), Math::max);
+            if (permitted.contains(sample.studentId()))
+                bestByStudent.merge(sample.studentId(), cosine(face, sample.vector()), Math::max);
         }
         int winner = -1;
         double first = -1.0, runnerUp = -1.0;
@@ -188,7 +190,7 @@ public class FaceService {
         return first >= threshold && (runnerUp < 0 || first - runnerUp >= 0.05) ? winner : -1;
     }
 
-    public synchronized int identify(byte[] bytes) {
+    public synchronized int identify(byte[] bytes, Set<Integer> permitted) {
         if (saved().isEmpty()) {
             throw new IllegalArgumentException("New face model needs fresh enrollment. Select student and capture 5-10 new face samples.");
         }
@@ -199,7 +201,7 @@ public class FaceService {
                 if (faces.rows() != 1) {
                     throw new IllegalArgumentException("Exactly one clear face required; detected " + faces.rows());
                 }
-                return match(embedding(image, faces, 0));
+                return match(embedding(image, faces, 0), permitted);
             } finally {
                 faces.release();
             }
@@ -208,7 +210,7 @@ public class FaceService {
         }
     }
 
-    public synchronized ScanResult scan(byte[] bytes) {
+    public synchronized ScanResult scan(byte[] bytes, Set<Integer> permitted) {
         Mat image = decode(bytes);
         try {
             Mat faces = detect(image);
@@ -220,7 +222,7 @@ public class FaceService {
                     faces.get(i, 0, f);
                     Integer person = null;
                     if (detected == 1 && !saved().isEmpty()) {
-                        int candidate = match(embedding(image, faces, i));
+                        int candidate = match(embedding(image, faces, i), permitted);
                         if (candidate >= 0) person = candidate;
                     }
                     boxes.add(new FaceBox(Math.max(0, Math.round(f[0])), Math.max(0, Math.round(f[1])),

@@ -112,6 +112,19 @@ public class AdminAccountApi {
         if (removed == 0) throw new IllegalArgumentException("Student or faculty login not found");
         return Map.of("message", "Login deleted. Student profile, face samples, and attendance are preserved.");
     }
+    @PostMapping("/students/{id}/owner")
+    @org.springframework.transaction.annotation.Transactional
+    public Object transferStudent(@PathVariable int id, @RequestBody Map<String, Object> body) {
+        access.admin();
+        String teacher = required(body, "teacherUsername", 50);
+        Integer valid = db.queryForObject("SELECT COUNT(*) FROM app_users " +
+            "WHERE username=? AND account_role='FACULTY' AND active=TRUE", Integer.class, teacher);
+        if (valid == null || valid == 0) throw new IllegalArgumentException("Choose an active Teacher account");
+        int updated = db.update("UPDATE students SET owner_username=? WHERE id=?", teacher, id);
+        if (updated == 0) throw new IllegalArgumentException("Student not found");
+        return Map.of("message", "Student ownership moved to selected Teacher; face samples retained");
+    }
+
     @GetMapping("/assignments") public Object assignments() {
         access.admin();
         return normalize(db.queryForList("SELECT fa.username,fa.classroom_id,fa.subject_id, " +

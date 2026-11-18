@@ -112,3 +112,9 @@ CREATE TABLE IF NOT EXISTS email_auth_failures (
     attempts INTEGER NOT NULL,
     lock_until BIGINT NOT NULL
 );
+
+-- Teacher isolation: existing historical records remain with the original default teacher.
+ALTER TABLE students ADD COLUMN IF NOT EXISTS owner_username VARCHAR(50);
+UPDATE students SET owner_username='teacher' WHERE owner_username IS NULL;
+ALTER TABLE classrooms ADD COLUMN IF NOT EXISTS owner_username VARCHAR(50);
+UPDATE classrooms SET owner_username='teacher' WHERE owner_username IS NULL;

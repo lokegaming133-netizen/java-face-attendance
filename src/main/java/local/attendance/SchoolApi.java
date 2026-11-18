@@ -25,8 +25,11 @@ import org.springframework.web.bind.annotation.*;
 public class SchoolApi {
     private final JdbcTemplate db;
     private final RoleAccess access;
+    private final TeacherPrivacyPolicy privacy;
 
-    public SchoolApi(JdbcTemplate db, RoleAccess access) { this.db = db; this.access = access; }
+    public SchoolApi(JdbcTemplate db, RoleAccess access, TeacherPrivacyPolicy privacy) {
+        this.db = db; this.access = access; this.privacy = privacy;
+    }
 
     private List<Map<String, Object>> rows(String sql, Object... parameters) {
         List<Map<String, Object>> result = new ArrayList<>();
@@ -73,14 +76,15 @@ public class SchoolApi {
 
     @GetMapping("/classrooms")
     public Object classrooms() {
-        if (access.isLegacyTeacherOrAdmin()) return rows("SELECT * FROM classrooms ORDER BY academic_year DESC, name, section");
-        return rows("SELECT DISTINCT c.* FROM classrooms c JOIN faculty_access fa ON fa.classroom_id=c.id " +
-            "WHERE fa.username=? ORDER BY c.academic_year DESC,c.name,c.section", access.username());
+        if (access.isAdmin()) return rows("SELECT * FROM classrooms ORDER BY academic_year DESC, name, section");
+        return rows("SELECT c.* FROM classrooms c WHERE c.owner_username=? OR EXISTS " +
+            "(SELECT 1 FROM faculty_access fa WHERE fa.classroom_id=c.id AND fa.username=?) " +
+            "ORDER BY c.academic_year DESC,c.name,c.section", access.username(), access.username());
     }
 
     @PostMapping("/classrooms")
     public Object createClassroom(@RequestBody Map<String, String> body) {
-        access.admin();
+        access.studentManager();
         String name = value(body, "name", 80);
         String section = value(body, "section", 30);
         String year = value(body, "academicYear", 20);
@@ -88,21 +92,21 @@ public class SchoolApi {
             throw new IllegalArgumentException("Academic year format: 2026-27 or 2026-2027");
         }
         String id = UUID.randomUUID().toString();
-        db.update("INSERT INTO classrooms(id,name,section,academic_year,created_at) VALUES(?,?,?,?,?)",
-            id, name, section, year, OffsetDateTime.now().toString());
+        db.update("INSERT INTO classrooms(id,name,section,academic_year,created_at,owner_username) VALUES(?,?,?,?,?,?)",
+            id, name, section, year, OffsetDateTime.now().toString(), access.username());
         return Map.of("message", "Classroom created", "id", id);
     }
 
     @GetMapping("/subjects")
     public Object subjects() {
-        if (access.isLegacyTeacherOrAdmin()) return rows("SELECT * FROM subjects ORDER BY code");
-        return rows("SELECT DISTINCT s.* FROM subjects s JOIN faculty_access fa ON fa.subject_id=s.id " +
-            "WHERE fa.username=? ORDER BY s.code", access.username());
+        // Subject code/title is a common catalog; student profiles/rosters remain private.
+        access.studentManager();
+        return rows("SELECT * FROM subjects ORDER BY code");
     }
 
     @PostMapping("/subjects")
     public Object createSubject(@RequestBody Map<String, String> body) {
-        access.admin();
+        access.studentManager();
         String code = value(body, "code", 25).toUpperCase(Locale.ROOT);
         if (!code.matches("[A-Z0-9_-]{2,25}")) {
             throw new IllegalArgumentException("Subject code must contain letters, numbers, _ or -");
@@ -117,7 +121,7 @@ public class SchoolApi {
     public Object classSubjects(@PathVariable String classroomId) {
         String id = uuid(classroomId);
         requireClassroom(id);
-        if (access.isLegacyTeacherOrAdmin()) return rows("SELECT s.id, s.code, s.title, cs.faculty_name FROM classroom_subjects cs " +
+        if (privacy.ownsClassroom(id)) return rows("SELECT s.id, s.code, s.title, cs.faculty_name FROM classroom_subjects cs " +
             "JOIN subjects s ON s.id=cs.subject_id WHERE cs.classroom_id=? ORDER BY s.code", id);
         return rows("SELECT s.id,s.code,s.title,cs.faculty_name FROM classroom_subjects cs " +
             "JOIN subjects s ON s.id=cs.subject_id JOIN faculty_access fa " +
@@ -127,9 +131,10 @@ public class SchoolApi {
 
     @PostMapping("/classrooms/{classroomId}/subjects")
     public Object assignSubject(@PathVariable String classroomId, @RequestBody Map<String, String> body) {
-        access.admin();
+        access.studentManager();
         String id = uuid(classroomId);
         requireClassroom(id);
+        privacy.requireOwnedClassroom(id);
         String subject = uuid(value(body, "subjectId", 36));
         String faculty = value(body, "facultyName", 100);
         Integer exists = db.queryForObject("SELECT COUNT(*) FROM subjects WHERE id=?", Integer.class, subject);
@@ -150,8 +155,11 @@ public class SchoolApi {
     public Object classStudents(@PathVariable String classroomId) {
         String id = uuid(classroomId);
         requireClassroom(id);
-        return rows("SELECT s.id, s.roll, s.name FROM classroom_students cs " +
+        if (access.isAdmin()) return rows("SELECT s.id, s.roll, s.name FROM classroom_students cs " +
             "JOIN students s ON s.id=cs.student_id WHERE cs.classroom_id=? ORDER BY s.roll", id);
+        return rows("SELECT s.id,s.roll,s.name FROM classroom_students cs " +
+            "JOIN students s ON s.id=cs.student_id WHERE cs.classroom_id=? " +
+            "AND s.owner_username=? ORDER BY s.roll", id, access.username());
     }
 
     @PostMapping("/classrooms/{classroomId}/students")
@@ -160,6 +168,7 @@ public class SchoolApi {
         String id = uuid(classroomId);
         requireClassroom(id);
         int student = studentId(value(body, "studentId", 16));
+        privacy.requireStudent(student);
         db.update("INSERT INTO classroom_students(classroom_id,student_id) VALUES(?,?)", id, student);
         return Map.of("message", "Student added to classroom roster");
     }
@@ -169,6 +178,7 @@ public class SchoolApi {
         access.studentManager();
         String id = uuid(classroomId);
         requireClassroom(id);
+        privacy.requireStudent(studentId);
         // Preserve historic attendance, biometric templates and the global student profile.
         int removed = db.update("DELETE FROM classroom_students WHERE classroom_id=? AND student_id=?", id, studentId);
         if (removed == 0) throw new IllegalArgumentException("Student not found in classroom roster");
@@ -203,15 +213,23 @@ public class SchoolApi {
         var assigned = rows("SELECT faculty_name FROM classroom_subjects WHERE classroom_id=? AND subject_id=?", classroom, subject);
         if (assigned.isEmpty()) throw new IllegalArgumentException("Assign the subject to this classroom first");
         String facultyName = String.valueOf(assigned.get(0).get("faculty_name"));
-        Integer rosterCount = db.queryForObject("SELECT COUNT(*) FROM classroom_students WHERE classroom_id=?",
-            Integer.class, classroom);
+        Integer rosterCount = access.isAdmin() ?
+            db.queryForObject("SELECT COUNT(*) FROM classroom_students WHERE classroom_id=?", Integer.class, classroom) :
+            db.queryForObject("SELECT COUNT(*) FROM classroom_students cs JOIN students st ON st.id=cs.student_id " +
+                "WHERE cs.classroom_id=? AND st.owner_username=?", Integer.class, classroom, access.username());
         if (rosterCount == null || rosterCount == 0) throw new IllegalArgumentException("Add students to this classroom before starting a session");
         String id = UUID.randomUUID().toString();
         String key = "CLS-" + id.replace("-", "");
         db.update("INSERT INTO class_sessions(id,classroom_id,subject_id,session_date,period_number,faculty_name,session_key,status,created_at) " +
             "VALUES(?,?,?,?,?,?,?,?,?)", id, classroom, subject, day, period, facultyName, key, "OPEN", OffsetDateTime.now().toString());
-        db.update("INSERT INTO class_session_students(session_id,student_id) " +
-            "SELECT ?, student_id FROM classroom_students WHERE classroom_id=?", id, classroom);
+        if (access.isAdmin()) {
+            db.update("INSERT INTO class_session_students(session_id,student_id) " +
+                "SELECT ?, student_id FROM classroom_students WHERE classroom_id=?", id, classroom);
+        } else {
+            db.update("INSERT INTO class_session_students(session_id,student_id) " +
+                "SELECT ?, cs.student_id FROM classroom_students cs JOIN students st ON st.id=cs.student_id " +
+                "WHERE cs.classroom_id=? AND st.owner_username=?", id, classroom, access.username());
+        }
         return Map.of("message", "Class attendance session started", "id", id, "sessionKey", key);
     }
 
@@ -227,11 +245,18 @@ public class SchoolApi {
     @GetMapping("/sessions/{sessionId}/report")
     public Object sessionReport(@PathVariable String sessionId) {
         var session = findSession(sessionId);
-        var roster = rows("SELECT s.id, s.roll, s.name, " +
-            "CASE WHEN a.student IS NULL THEN 'NOT_MARKED' ELSE 'PRESENT' END AS attendance_status, " +
-            "a.marked_at, a.method FROM class_session_students css JOIN students s ON s.id=css.student_id " +
-            "LEFT JOIN attendance a ON a.student=s.id AND a.session_name=? " +
-            "WHERE css.session_id=? ORDER BY s.roll", session.get("session_key"), session.get("id"));
+        var roster = access.isAdmin() ?
+            rows("SELECT s.id,s.roll,s.name,CASE WHEN a.student IS NULL THEN 'NOT_MARKED' " +
+                 "ELSE 'PRESENT' END AS attendance_status,a.marked_at,a.method " +
+                 "FROM class_session_students css JOIN students s ON s.id=css.student_id " +
+                 "LEFT JOIN attendance a ON a.student=s.id AND a.session_name=? " +
+                 "WHERE css.session_id=? ORDER BY s.roll", session.get("session_key"),session.get("id")) :
+            rows("SELECT s.id,s.roll,s.name,CASE WHEN a.student IS NULL THEN 'NOT_MARKED' " +
+                 "ELSE 'PRESENT' END AS attendance_status,a.marked_at,a.method " +
+                 "FROM class_session_students css JOIN students s ON s.id=css.student_id " +
+                 "LEFT JOIN attendance a ON a.student=s.id AND a.session_name=? " +
+                 "WHERE css.session_id=? AND s.owner_username=? ORDER BY s.roll",
+                 session.get("session_key"),session.get("id"),access.username());
         long present = roster.stream().filter(row -> "PRESENT".equals(row.get("attendance_status"))).count();
         return Map.of("session", session, "roster", roster, "present", present, "total", roster.size());
     }

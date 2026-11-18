@@ -146,8 +146,50 @@
      body:JSON.stringify({username:el('role-faculty').value,classroomId:el('role-classroom').value,subjectId:el('role-subject').value})});
    await load();notice(response.message);
  });
- run(load);
-})();
+  run(load);
+  async function transferPanel() {
+    const host = el('role-admin-panel');
+    if (!host) return;
+    const card = document.createElement('section');
+    card.className = 'role-item';
+    const title = document.createElement('strong');
+    title.textContent = 'Transfer existing student to a Teacher (Admin only)';
+    const help = document.createElement('p');
+    help.textContent = 'Use only when an old roll is already registered. Student face samples and attendance stay linked to the student. The previous Teacher loses access.';
+    const studentSelect = document.createElement('select');
+    const teacherSelect = document.createElement('select');
+    studentSelect.setAttribute('aria-label','Student to transfer');
+    teacherSelect.setAttribute('aria-label','New owner Teacher');
+    option(studentSelect,'','Choose existing student');
+    option(teacherSelect,'','Choose new owner Teacher');
+    const [records,accounts] = await Promise.all([request('/api/students'),request('/api/admin/accounts')]);
+    for (const raw of records) {
+      const st=Object.fromEntries(Object.entries(raw).map(([k,v])=>[k.toLowerCase(),v]));
+      option(studentSelect,st.id,st.roll+' · '+st.name+' · current: '+(st.owner_username||'teacher'));
+    }
+    for(const a of accounts.filter(x=>x.account_role==='FACULTY'&&x.active))
+      option(teacherSelect,a.username,a.username);
+    const move = document.createElement('button');
+    move.type='button'; move.textContent='Transfer student ownership';
+    move.className='role-outline';
+    move.addEventListener('click',()=>run(async()=>{
+      if (!studentSelect.value || !teacherSelect.value) throw Error('Choose a student and a Teacher');
+      if (!confirm('Transfer this student and all linked face samples to '+teacherSelect.value+'?')) return;
+      move.disabled=true;
+      try {
+        const response=await request('/api/admin/students/'+encodeURIComponent(studentSelect.value)+'/owner',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({teacherUsername:teacherSelect.value})
+        });
+        notice(response.message);
+        location.reload();
+      } finally {move.disabled=false;}
+    }));
+    card.append(title,help,studentSelect,teacherSelect,move);
+    host.append(card);
+  }
+  run(transferPanel);
+ })();
 
 /* FaceAttend role scenes V3 */
 ;(()=>{

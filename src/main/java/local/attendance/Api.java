@@ -19,13 +19,16 @@ public class Api {
     private final FaceService faces;
     private final SchoolService school;
     private final RoleAccess access;
+    private final TeacherPrivacyPolicy privacy;
     private final AttendanceTextService attendanceText;
 
-    public Api(JdbcTemplate db, FaceService faces, AttendanceTextService attendanceText, SchoolService school, RoleAccess access) {
+    public Api(JdbcTemplate db, FaceService faces, AttendanceTextService attendanceText, SchoolService school, RoleAccess access,
+               TeacherPrivacyPolicy privacy) {
         this.db = db;
         this.faces = faces;
         this.school = school;
         this.access = access;
+        this.privacy = privacy;
         this.attendanceText = attendanceText;
     }
 
@@ -36,10 +39,8 @@ public class Api {
     public Object students() {
         String base = "SELECT s.*, (SELECT COUNT(*) FROM face_embeddings f WHERE f.student=s.id) AS samples, " +
             "(SELECT COUNT(*) FROM samples old WHERE old.student=s.id) AS legacy_samples FROM students s ";
-        if (access.canManageStudents()) return db.queryForList(base + "ORDER BY id");
-        return db.queryForList(base + "WHERE EXISTS (SELECT 1 FROM classroom_students cs " +
-            "JOIN faculty_access fa ON fa.classroom_id=cs.classroom_id " +
-            "WHERE cs.student_id=s.id AND fa.username=?) ORDER BY s.id", access.username());
+        if (access.isAdmin()) return db.queryForList(base + "ORDER BY id");
+        return db.queryForList(base + "WHERE s.owner_username=? ORDER BY s.id", access.username());
     }
 
     private String gender(String supplied) {
@@ -59,7 +60,8 @@ public class Api {
                 || !"true".equals(body.get("consent"))) {
             throw new IllegalArgumentException("Name, valid roll number and consent required");
         }
-        db.update("INSERT INTO students(roll,name,gender) VALUES(?,?,?)", roll, name, gender(body.get("gender")));
+        db.update("INSERT INTO students(roll,name,gender,owner_username) VALUES(?,?,?,?)",
+            roll, name, gender(body.get("gender")), access.username());
         return Map.of("message", "Student created. Add at least 5 face samples.");
     }
 
@@ -67,6 +69,7 @@ public class Api {
     @PutMapping("/students/{id}/gender")
     public Object updateGender(@PathVariable int id, @RequestBody Map<String, String> body) {
         access.studentManager();
+        privacy.requireStudent(id);
         int changed = db.update("UPDATE students SET gender=? WHERE id=?", gender(body.get("gender")), id);
         if (changed == 0) throw new IllegalArgumentException("Student not found");
         return Map.of("message", "Student gender updated");
@@ -76,6 +79,7 @@ public class Api {
     @Transactional
     public Object sample(@PathVariable int id, @RequestParam MultipartFile image) throws Exception {
         access.studentManager();
+        privacy.requireStudent(id);
         Integer count = db.queryForObject("SELECT COUNT(*) FROM face_embeddings WHERE student=?", Integer.class, id);
         if (count != null && count >= 20) {
             throw new IllegalArgumentException("Maximum 20 new-model samples per student");
@@ -90,6 +94,7 @@ public class Api {
     @Transactional
     public void delete(@PathVariable int id) {
         access.studentManager();
+        privacy.requireStudent(id);
         db.update("UPDATE app_users SET active=FALSE,auth_version=auth_version+1 WHERE student_id=?", id);
         db.update("DELETE FROM attendance WHERE student=?", id);
         db.update("DELETE FROM face_embeddings WHERE student=?", id);
@@ -115,6 +120,7 @@ public class Api {
 
     private Object mark(int id, String s, String method) {
         session(s);
+        privacy.requireStudent(id);
         school.validateMark(id, s);
         try {
             db.update("INSERT INTO attendance(student,session_name,marked_at,method) VALUES(?,?,?,?)",
@@ -129,7 +135,7 @@ public class Api {
     @PostMapping("/recognize")
     public Object recognize(@RequestParam MultipartFile image, @RequestParam String session) throws Exception {
         session(session);
-        int id = faces.identify(image.getBytes());
+        int id = faces.identify(image.getBytes(), privacy.visibleStudentIds(session));
         if (id >= 0 && !access.canIdentify(id, session)) id = -1;
         if (id < 0) return Map.of("message", "Unknown face. Try again or mark manually.");
         return Map.of("message", "Candidate found — teacher must verify before marking", "candidate", id);
@@ -139,7 +145,7 @@ public class Api {
     @PostMapping("/live")
     public Object live(@RequestParam MultipartFile image,
                        @RequestParam(required = false) String session) throws Exception {
-        FaceService.ScanResult result = faces.scan(image.getBytes());
+        FaceService.ScanResult result = faces.scan(image.getBytes(), privacy.visibleStudentIds(session));
         List<Map<String, Object>> boxes = new ArrayList<>();
         for (FaceService.FaceBox face : result.faces()) {
             Map<String, Object> item = new LinkedHashMap<>();
@@ -169,15 +175,14 @@ public class Api {
     @GetMapping("/attendance")
     public Object records() {
         String sql = "SELECT a.*,s.name,s.roll,s.gender FROM attendance a JOIN students s ON s.id=a.student ";
-        if (access.isLegacyTeacherOrAdmin()) return db.queryForList(sql + "ORDER BY a.marked_at DESC");
-        return db.queryForList(sql + "JOIN class_sessions x ON x.session_key=a.session_name " +
-            "JOIN faculty_access fa ON fa.classroom_id=x.classroom_id AND fa.subject_id=x.subject_id " +
-            "WHERE fa.username=? ORDER BY a.marked_at DESC", access.username());
+        if (access.isAdmin()) return db.queryForList(sql + "ORDER BY a.marked_at DESC");
+        return db.queryForList(sql + "WHERE s.owner_username=? ORDER BY a.marked_at DESC", access.username());
     }
 
     @DeleteMapping("/attendance")
     public void remove(@RequestParam int student, @RequestParam String session) {
-        access.admin(); // Correction audit trail will be added in a later phase.
+        access.studentManager();
+        privacy.requireStudent(student);
         db.update("DELETE FROM attendance WHERE student=? AND session_name=?", student, session);
         attendanceText.refreshSafely();
     }

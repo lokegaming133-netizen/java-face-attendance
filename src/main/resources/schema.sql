@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS students(
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
-    roll VARCHAR(50) UNIQUE NOT NULL,
+    roll VARCHAR(50) NOT NULL,
     name VARCHAR(100) NOT NULL,
     gender VARCHAR(40) NOT NULL DEFAULT 'Not specified'
 );
@@ -121,3 +121,5 @@ ALTER TABLE students ADD COLUMN IF NOT EXISTS owner_username VARCHAR(50);
 UPDATE students SET owner_username='teacher' WHERE owner_username IS NULL;
 ALTER TABLE classrooms ADD COLUMN IF NOT EXISTS owner_username VARCHAR(50);
 UPDATE classrooms SET owner_username='teacher' WHERE owner_username IS NULL;
+-- Per-teacher UNIQUE student rolls. Historical rows remain assigned to their owners.
+CREATE UNIQUE INDEX IF NOT EXISTS uq_students_owner_roll ON students(owner_username, roll);

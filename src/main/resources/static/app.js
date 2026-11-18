@@ -314,14 +314,12 @@ bind('recognize', async () => {
     const currentSession = session();
     $('candidate').hidden = true;
     const body = await imageBody();
-    body.append('session', currentSession);
     let result = await api('/recognize', { method: 'POST', body });
     if (!result.candidate && String(result.message).includes('Unknown face')) {
         // Another live frame often catches open eyes / less motion blur.
         for (let retry = 0; retry < 2 && !result.candidate; retry++) {
             await new Promise(resolve => setTimeout(resolve, 220));
             const next = await imageBody();
-            next.append('session', currentSession);
             const candidate = await api('/recognize', { method: 'POST', body: next });
             if (candidate.candidate) result = candidate;
         }
@@ -329,7 +327,6 @@ bind('recognize', async () => {
     if (!result.candidate && String(result.message).includes('Unknown face')) {
         for (const angle of [14, -14]) {
             const turned = await imageBody(angle);
-            turned.append('session', currentSession);
             const candidate = await api('/recognize', { method: 'POST', body: turned });
             if (candidate.candidate) { result = candidate; break; }
         }

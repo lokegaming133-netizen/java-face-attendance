@@ -204,4 +204,113 @@ window.addEventListener('unhandledrejection',e=>{
  const f=document.getElementById('role-feedback');if(f)f.textContent='Admin data could not load. Please check your server logs and Admin session.';
 });
 </script>
+<script>
+/* FaceAttend Admin-only link repair, injected into admin.html by the safe installer. */
+(async () => {
+  'use strict';
+  const host = document.querySelector('#role-admin-panel .role-grid') ||
+               document.querySelector('#role-admin-panel .role-shell');
+  if (!host || document.getElementById('student-link-repair-panel')) return;
+  const box = document.createElement('section');
+  box.id = 'student-link-repair-panel';
+  box.className = 'role-card role-wide';
+  const title = document.createElement('h3');
+  title.textContent = 'Repair Student Portal Link (Admin only)';
+  const help = document.createElement('p');
+  help.textContent = 'If a student login has no attendance even though the Teacher saved a mark, ' +
+    'check the linked Student ID. Select the existing profile that actually has attendance. ' +
+    'No face, attendance or student records are deleted.';
+  const loginLabel = document.createElement('label');
+  loginLabel.textContent = 'Student login account';
+  const loginSelect = document.createElement('select');
+  loginLabel.append(loginSelect);
+  const profileLabel = document.createElement('label');
+  profileLabel.textContent = 'Correct student profile (same roll)';
+  const profileSelect = document.createElement('select');
+  profileLabel.append(profileSelect);
+  const info = document.createElement('p');
+  info.style.cssText='white-space:pre-line;margin:10px 0;color:inherit';
+  const action = document.createElement('button');
+  action.textContent = 'Connect Student Login to Selected Profile';
+  action.type = 'button';
+  const reload = document.createElement('button');
+  reload.textContent = 'Refresh links';
+  reload.type = 'button';
+  reload.className = 'role-outline';
+  const buttons = document.createElement('div');
+  buttons.style.cssText='display:flex;gap:10px;flex-wrap:wrap;margin:10px 0';
+  buttons.append(action,reload);
+  box.append(title,help,loginLabel,profileLabel,buttons,info);
+  host.append(box);
+  let data = {logins:[], profiles:[]};
+  const opt=(sel,id,text)=>{const o=document.createElement('option');o.value=String(id);o.textContent=String(text);sel.append(o)};
+  async function request(url, options={}) {
+    const init={...options,credentials:'same-origin',headers:{...(options.headers||{})}};
+    if(init.method && init.method!=='GET'){
+      const r=await fetch('/api/csrf',{credentials:'same-origin'});
+      if(!r.ok) throw Error('Admin session expired');
+      const csrf=await r.json();
+      init.headers[csrf.headerName]=csrf.token;
+    }
+    const r=await fetch(url,init);
+    let body={};try{body=await r.json()}catch{}
+    if(!r.ok) throw Error(body.message||'Request failed ('+r.status+')');
+    return body;
+  }
+  function chosenLogin(){return data.logins.find(u=>String(u.username)===loginSelect.value)}
+  function profilesFor(login){
+    if(!login) return [];
+    const oldRoll=String(login.roll||'').trim().toUpperCase();
+    return data.profiles.filter(p=>!oldRoll||String(p.roll||'').trim().toUpperCase()===oldRoll);
+  }
+  function updateProfiles(){
+    const login=chosenLogin();
+    profileSelect.replaceChildren();
+    opt(profileSelect,'','Select correct student profile');
+    if(!login){info.textContent='Select a student login first';return}
+    const matches=profilesFor(login);
+    for(const p of matches)opt(profileSelect,p.id,
+      'ID '+p.id+' | '+p.roll+' | '+p.name+' | Teacher: '+(p.owner_username||'teacher')+
+      ' | '+p.attendance_marks+' marks | '+p.class_sessions+' class sessions');
+    const current=matches.find(p=>String(p.id)===String(login.student_id));
+    info.textContent='Currently linked Student ID: '+(login.student_id??'none')+
+      (current?' | attendance marks: '+current.attendance_marks+' | class sessions: '+current.class_sessions:'')+
+      '\nChoose the matching profile that contains the Teacher-marked attendance.';
+    action.disabled=matches.length===0;
+  }
+  async function load(){
+    info.textContent='Loading Student IDs and attendance counts...';
+    const old=loginSelect.value;
+    data=await request('/api/admin/student-link-repair/audit');
+    loginSelect.replaceChildren();
+    opt(loginSelect,'','Select student login');
+    for(const user of data.logins)opt(loginSelect,user.username,
+      user.username+' | '+(user.roll||'no linked roll')+' | Current ID '+(user.student_id??'none'));
+    if(data.logins.some(u=>u.username===old))loginSelect.value=old;
+    else if(data.logins.length)loginSelect.value=data.logins[0].username;
+    updateProfiles();
+  }
+  loginSelect.addEventListener('change',updateProfiles);
+  reload.onclick=()=>load().catch(e=>info.textContent='Error: '+e.message);
+  action.onclick=async()=>{
+    const login=chosenLogin();
+    const target=data.profiles.find(p=>String(p.id)===profileSelect.value);
+    if(!login||!target){info.textContent='Select a login and the correct profile';return}
+    const prompt='Link student login '+login.username+' to '+target.name+' ('+target.roll+')\n'+
+      'Teacher: '+(target.owner_username||'teacher')+'\nAttendance marks: '+target.attendance_marks+
+      '\n\nThe student will have to log in again. Continue?';
+    if(!window.confirm(prompt))return;
+    action.disabled=true;
+    try{
+      const response=await request('/api/admin/student-link-repair/relink',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({username:login.username,studentId:target.id})
+      });
+      await load();info.textContent=response.message+'\nNow sign in to the Student Portal again.';
+    }catch(e){info.textContent='Error: '+e.message}
+    finally{action.disabled=false}
+  };
+  try{await load()}catch(e){info.textContent='Link-check unavailable: '+e.message}
+})();
+</script>
 </body></html>

@@ -195,30 +195,81 @@ public class Api {
 
     @GetMapping(value = "/export", produces = "text/csv")
     public ResponseEntity<String> export() {
-        access.admin(); // Faculty use their scoped classroom session CSV endpoint.
-        StringBuilder b = new StringBuilder("Roll,Name,Gender,Session,Time,Method\n");
-        for (var r : db.queryForList("SELECT s.roll,s.name,s.gender,a.session_name,a.marked_at,a.method "
-                + "FROM attendance a JOIN students s ON s.id=a.student ORDER BY marked_at DESC")) {
+        // A faculty member may export only students from their own private workspace.
+        // Admin sees the full institution register.
+        access.studentManager();
+        String sql = "SELECT s.roll,s.name,s.gender,a.session_name,a.marked_at,a.method "
+                + "FROM attendance a JOIN students s ON s.id=a.student "
+                + (access.isAdmin() ? "" : "WHERE s.owner_username=? ")
+                + "ORDER BY a.marked_at DESC";
+        List<Map<String,Object>> rows = access.isAdmin()
+                ? db.queryForList(sql) : db.queryForList(sql, access.username());
+        StringBuilder b = new StringBuilder("\uFEFFRoll,Name,Gender,Session,Time,Method\r\n");
+        for (var r : rows) {
             b.append(String.join(",", List.of(
                 csv(SchoolService.column(r,"roll")), csv(SchoolService.column(r,"name")),
                 csv(SchoolService.column(r,"gender")), csv(SchoolService.column(r,"session_name")),
                 csv(SchoolService.column(r,"marked_at")), csv(SchoolService.column(r,"method"))
-            ))).append("\n");
+            ))).append("\r\n");
         }
-        return ResponseEntity.ok().header("Content-Disposition", "attachment; filename=attendance.csv").body(b.toString());
+        return ResponseEntity.ok()
+            .contentType(MediaType.parseMediaType("text/csv;charset=UTF-8"))
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"attendance.csv\"")
+            .body(b.toString());
     }
 
-    // Download the current human-readable table, not another new archive file.
+    // TXT download is generated in memory for both Admin and faculty; no cloud disk dependency.
     @GetMapping(value = "/export-text", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<byte[]> exportText() throws IOException {
-        access.admin();
+        access.studentManager();
+        String sql = "SELECT s.roll,s.name,s.gender,a.session_name,a.marked_at,a.method " +
+            "FROM attendance a JOIN students s ON s.id=a.student " +
+            (access.isAdmin() ? "" : "WHERE s.owner_username=? ") +
+            "ORDER BY a.marked_at DESC";
+        var records = access.isAdmin() ? db.queryForList(sql) : db.queryForList(sql, access.username());
+        String[] header = {"No", "Roll", "Student Name", "Gender", "Session", "Marked At", "Method"};
+        List<String[]> lines = new ArrayList<>();
+        int rowNumber = 0;
+        for (var r : records) {
+            lines.add(new String[] {
+                Integer.toString(++rowNumber),
+                String.valueOf(SchoolService.column(r, "roll")),
+                String.valueOf(SchoolService.column(r, "name")),
+                String.valueOf(SchoolService.column(r, "gender")),
+                String.valueOf(SchoolService.column(r, "session_name")),
+                String.valueOf(SchoolService.column(r, "marked_at")),
+                String.valueOf(SchoolService.column(r, "method"))
+            });
+        }
+        int[] widths = new int[header.length];
+        for (int i = 0; i < widths.length; i++) widths[i] = header[i].length();
+        for (String[] line : lines)
+            for (int i = 0; i < line.length; i++) {
+                line[i] = line[i].replaceAll("[\\p{Cntrl}|]", " ");
+                widths[i] = Math.max(widths[i], line[i].length());
+            }
+        StringBuilder output = new StringBuilder("JAVA FACE ATTENDANCE - ATTENDANCE REGISTER\r\n");
+        output.append("Teacher: ").append(access.username()).append("\r\n");
+        output.append("Total attendance records: ").append(lines.size()).append("\r\n\r\n");
+        List<String[]> all = new ArrayList<>();
+        all.add(header);
+        all.addAll(lines);
+        for (int row = 0; row < all.size(); row++) {
+            String[] values = all.get(row);
+            for (int i = 0; i < values.length; i++) {
+                output.append("| ").append(values[i]);
+                output.append(" ".repeat(widths[i] - values[i].length() + 1));
+            }
+            output.append("|\r\n");
+            if (row == 0) output.append("-".repeat(
+                java.util.Arrays.stream(widths).sum() + widths.length * 3 + 1)).append("\r\n");
+        }
+        if (lines.isEmpty()) output.append("No attendance records in this Teacher workspace.\r\n");
         return ResponseEntity.ok()
             .contentType(MediaType.parseMediaType("text/plain;charset=UTF-8"))
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=attendance_register.txt")
-            .body(attendanceText.refresh());
-    }
-
-    @ExceptionHandler({IllegalArgumentException.class, org.springframework.dao.DataIntegrityViolationException.class})
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"attendance_register.txt\"")
+            .body(("\uFEFF" + output).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    }    @ExceptionHandler({IllegalArgumentException.class, org.springframework.dao.DataIntegrityViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Object error(Exception e) {
         return Map.of("message", e instanceof IllegalArgumentException ? e.getMessage()

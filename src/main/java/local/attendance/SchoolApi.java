@@ -189,7 +189,7 @@ public class SchoolApi {
     public Object sessions(@PathVariable String classroomId) {
         String id = uuid(classroomId);
         requireClassroom(id);
-        if (access.isLegacyTeacherOrAdmin()) return rows("SELECT x.*, s.code AS subject_code, s.title AS subject_title " +
+        if (access.isAdmin() || privacy.ownsClassroom(id)) return rows("SELECT x.*, s.code AS subject_code, s.title AS subject_title " +
             "FROM class_sessions x JOIN subjects s ON s.id=x.subject_id " +
             "WHERE x.classroom_id=? ORDER BY x.session_date DESC, x.period_number DESC", id);
         return rows("SELECT x.*,s.code AS subject_code,s.title AS subject_title " +
